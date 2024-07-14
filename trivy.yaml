@@ -1,0 +1,5 @@
+timeout: 10m
+exit-code: 1
+severity:
+  - CRITICAL
+  - HIGH
