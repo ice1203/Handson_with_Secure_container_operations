@@ -19,7 +19,7 @@ repos:
         - --args=--config=__GIT_WORKING_DIR__/.tflint.hcl
     -   id: terraform_trivy
         args:
-        - --args=--config=__GIT_WORKING_DIR__/.trivy.yaml
+        - --args=--config=__GIT_WORKING_DIR__/trivy.yaml
 -   repo: local
     hooks:
     -   id: git-secrets
