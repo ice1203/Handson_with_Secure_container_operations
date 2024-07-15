@@ -204,71 +204,73 @@ resource "aws_ecs_cluster" "webapp" {
   }
 }
 
-## ecs task definition
-resource "aws_ecs_task_definition" "webapp" {
-  family                   = "${var.sys_name}-${var.env_name}-fumitask"
-  container_definitions    = <<DEFINITION
-[
-  {
-    "name": "main_app",
-    "image": "public.ecr.aws/nginx/nginx:stable-perl",
-    "cpu": 256,
-    "memoryReservation": 512,
-    "portMappings": [
-      {
-        "hostPort": ${var.docker_container_port},
-        "protocol": "tcp",
-        "containerPort": ${var.docker_container_port}
-      }
-    ],
-    "essential": true,
-    "secrets": [],
-    "logConfiguration": {
-        "logDriver": "awslogs",
-        "options": {
-            "awslogs-group": "${aws_cloudwatch_log_group.webapp_ecs_task.name}",
-            "awslogs-region": "ap-northeast-1",
-            "awslogs-stream-prefix": "mycontainer"
-        },
-        "secretOptions": []
-    }
-  }
-]
-DEFINITION
-  requires_compatibilities = ["FARGATE"]
-  network_mode             = "awsvpc"
-  cpu                      = "256"
-  memory                   = "512"
-  execution_role_arn       = aws_iam_role.ecs_task_execution_role.arn
-  task_role_arn            = aws_iam_role.ecs_task_role.arn
-  tags = {
-    Environment = var.env_name
-  }
-}
+# ecspressoで管理するためコメントアウト
+### ecs task definition
+#resource "aws_ecs_task_definition" "webapp" {
+#  family                   = "${var.sys_name}-${var.env_name}-fumitask"
+#  container_definitions    = <<DEFINITION
+#[
+#  {
+#    "name": "main_app",
+#    "image": "public.ecr.aws/nginx/nginx:stable-perl",
+#    "cpu": 256,
+#    "memoryReservation": 512,
+#    "portMappings": [
+#      {
+#        "hostPort": ${var.docker_container_port},
+#        "protocol": "tcp",
+#        "containerPort": ${var.docker_container_port}
+#      }
+#    ],
+#    "essential": true,
+#    "secrets": [],
+#    "logConfiguration": {
+#        "logDriver": "awslogs",
+#        "options": {
+#            "awslogs-group": "${aws_cloudwatch_log_group.webapp_ecs_task.name}",
+#            "awslogs-region": "ap-northeast-1",
+#            "awslogs-stream-prefix": "mycontainer"
+#        },
+#        "secretOptions": []
+#    }
+#  }
+#]
+#DEFINITION
+#  requires_compatibilities = ["FARGATE"]
+#  network_mode             = "awsvpc"
+#  cpu                      = "256"
+#  memory                   = "512"
+#  execution_role_arn       = aws_iam_role.ecs_task_execution_role.arn
+#  task_role_arn            = aws_iam_role.ecs_task_role.arn
+#  tags = {
+#    Environment = var.env_name
+#  }
+#}
 
+# ecspressoで管理するためコメントアウト
 ## ecs service
-resource "aws_ecs_service" "webapp" {
-  name            = "${var.sys_name}-${var.env_name}-${var.subsys_name}-ecs-svc"
-  task_definition = aws_ecs_task_definition.webapp.family
-  desired_count   = "0"
-  cluster         = aws_ecs_cluster.webapp.id
-  launch_type     = "FARGATE"
-  network_configuration {
-    subnets          = var.private_subnets
-    security_groups  = [aws_security_group.webapp_ecs_task.id]
-    assign_public_ip = false
-  }
-
-  load_balancer {
-    container_name   = "main_app"
-    container_port   = var.docker_container_port
-    target_group_arn = aws_lb_target_group.webapp_alb.arn
-  }
-  # terraformでサービスを変更したい場合はコメントアウトする
-  lifecycle {
-    ignore_changes = all
-  }
-}
+#resource "aws_ecs_service" "webapp" {
+#  name            = "${var.sys_name}-${var.env_name}-${var.subsys_name}-ecs-svc"
+#  task_definition = aws_ecs_task_definition.webapp.family
+#  desired_count   = "0"
+#  cluster         = aws_ecs_cluster.webapp.id
+#  launch_type     = "FARGATE"
+#  network_configuration {
+#    subnets          = var.private_subnets
+#    security_groups  = [aws_security_group.webapp_ecs_task.id]
+#    assign_public_ip = false
+#  }
+#
+#  load_balancer {
+#    container_name   = "main_app"
+#    container_port   = var.docker_container_port
+#    target_group_arn = aws_lb_target_group.webapp_alb.arn
+#  }
+#  # terraformでサービスを変更したい場合はコメントアウトする
+#  lifecycle {
+#    ignore_changes = all
+#  }
+#}
 
 
 # DynamoDB
