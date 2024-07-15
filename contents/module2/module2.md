@@ -81,3 +81,11 @@ https://ap-northeast-1.console.aws.amazon.com/cloud9/home?region=ap-northeast-1
            sudo reboot
        fi
 7. コマンドが成功するとCloud9のインスタンスが再起動されます。再度立ち上がってくるまでしばらくお待ちください
+
+## ECSデプロイ
+
+```
+terraform init -backend-config="bucket=tmp-hands-on-tf-state-$(aws sts get-caller-identity --query Account --output text)"
+set -x AWS_ACCOUNT_ID $(aws sts get-caller-identity --query Account --output text)
+
+```

@@ -162,7 +162,7 @@ resource "aws_lb_target_group" "webapp_alb" {
   vpc_id               = var.vpc_id
   deregistration_delay = 20
   health_check {
-    path = "/healthcheck"
+    path = "/"
     #path                = "/rolldice"
     protocol            = "HTTP"
     matcher             = "200,404"
@@ -266,9 +266,7 @@ resource "aws_ecs_service" "webapp" {
   }
   # terraformでサービスを変更したい場合はコメントアウトする
   lifecycle {
-    ignore_changes = [
-      task_definition
-    ]
+    ignore_changes = all
   }
 }
 

@@ -1,0 +1,10 @@
+region: ap-northeast-1
+cluster: ecs-handson-frontend-ecs-cluster
+service: ecs-handson-frontend-ecs-svc
+service_definition: ecs-service-def.json
+task_definition: ecs-task-def.json
+timeout: "10m0s"
+plugins:
+  - name: tfstate
+    config:
+      url: "s3://tmp-hands-on-tf-state-{{must_env `AWS_ACCOUNT_ID`}}/module2/ecs/tfstate"

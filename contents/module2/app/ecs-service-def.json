@@ -1,0 +1,48 @@
+{
+  "deploymentConfiguration": {
+    "deploymentCircuitBreaker": {
+      "enable": true,
+      "rollback": true
+    },
+    "maximumPercent": 200,
+    "minimumHealthyPercent": 100
+  },
+  "deploymentController": {
+    "type": "ECS"
+  },
+  "desiredCount": 1,
+  "enableECSManagedTags": true,
+  "enableExecuteCommand": true,
+  "healthCheckGracePeriodSeconds": 0,
+  "launchType": "FARGATE",
+  "loadBalancers": [
+    {
+      "containerName": "main_app",
+      "containerPort": 80,
+      "targetGroupArn": "{{ tfstate `module.frontend-ecs.aws_lb_target_group.webapp_alb.arn` }}"
+    }
+  ],
+  "networkConfiguration": {
+    "awsvpcConfiguration": {
+      "assignPublicIp": "DISABLED",
+      "securityGroups": [
+        "{{ tfstate `module.frontend-ecs.aws_security_group.webapp_ecs_task.id` }}"
+      ],
+      "subnets": [
+        "{{ tfstate `module.vpc.aws_subnet.private[0].id` }}",
+        "{{ tfstate `module.vpc.aws_subnet.private[1].id` }}",
+        "{{ tfstate `module.vpc.aws_subnet.private[2].id` }}"
+      ]
+    }
+  },
+  "platformFamily": "Linux",
+  "platformVersion": "LATEST",
+  "propagateTags": "TASK_DEFINITION",
+  "schedulingStrategy": "REPLICA",
+  "tags": [
+    {
+      "key": "iac",
+      "value": "terraform"
+    }
+  ]
+}
