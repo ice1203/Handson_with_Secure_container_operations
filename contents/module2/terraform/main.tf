@@ -1,6 +1,8 @@
+data "aws_caller_identity" "current" {}
 locals {
-  sys_name = "ecs"
-  env_name = "handson"
+  sys_name       = "ecs"
+  env_name       = "handson"
+  aws_account_id = data.aws_caller_identity.current.account_id
 }
 
 module "vpc" {
@@ -28,6 +30,16 @@ module "vpc" {
     Environment = local.env_name
   }
 }
+module "githubactions_role" {
+  source = "./modules/github-actions"
+
+  sys_name       = local.sys_name
+  env_name       = local.env_name
+  github_owner   = "ice1203"
+  github_repo    = "Handson_with_Secure_container_operations"
+  aws_account_id = local.aws_account_id
+
+}
 module "frontend-ecr" {
   source = "./modules/ecr"
 
@@ -39,11 +51,11 @@ module "frontend-ecr" {
 module "frontend-ecs" {
   source = "./modules/ecs"
 
-  sys_name              = local.sys_name
-  env_name              = local.env_name
-  subsys_name           = "frontend"
-  vpc_id                = module.vpc.vpc_id
-  private_subnets       = module.vpc.private_subnets
+  sys_name    = local.sys_name
+  env_name    = local.env_name
+  subsys_name = "frontend"
+  vpc_id      = module.vpc.vpc_id
+  #private_subnets       = module.vpc.private_subnets
   public_subnets        = module.vpc.public_subnets
   alb_listener_port     = 80
   docker_container_port = 80
