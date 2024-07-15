@@ -4,11 +4,11 @@ on:
     push:
         branches:
             - main
+            - develop-branch
         paths:
-            - 'contents/module2/app/javascript-sample-app/**'
+            - 'contents/module2/app/**'
 
 jobs:
-
   deploy:
     runs-on: ubuntu-22.04
     env:
@@ -32,46 +32,47 @@ jobs:
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
 
-#     # イメージをビルドしてコミットID（ハッシュ）でタグ付け
-#     - name: Build, tag, and push image to Amazon ECR
-#       id: build-image
-#       env:
-#         ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-#         ECR_REPOSITORY: ${{ env.ECR_REPOSITORY_NAME }}
-#         IMAGE_TAG: ${{ github.sha }}
-#         ENV_NAME: development
-#       run: |
-#         docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG -f ./Dockerfile .
-#         docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
-#         echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
+     # イメージをビルドしてコミットID（ハッシュ）でタグ付け
+      - name: Build, tag, and push image to Amazon ECR
+        id: build-image
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          ECR_REPOSITORY: ${{ env.ECR_REPOSITORY_NAME }}
+          IMAGE_TAG: ${{ github.sha }}
+          ENV_NAME: development
+        run: |
+          cd contents/module2/app/javascript-sample-app
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG -f ./Dockerfile .
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
+
+#      # タスク定義.jsonのアカウントID部分を置換
+#      - name: Rewrite task-definition account id
+#        run: sed -i -e s/TARGET_AWS_ACCOUNT_ID/${{ secrets.AWS_ACCOUNT_ID }}/g ./ecs/dev-task-def.json
 #
-#     # タスク定義.jsonのアカウントID部分を置換
-#     - name: Rewrite task-definition account id
-#       run: sed -i -e s/TARGET_AWS_ACCOUNT_ID/${{ secrets.AWS_ACCOUNT_ID }}/g ./ecs/dev-task-def.json
+#      # タスク定義.jsonのSVC_CODE部分を置換
+#      - name: Rewrite task-definition service code
+#        run: sed -i -e s/SVC_CODE/${{ secrets.SVC_CODE }}/g ./ecs/dev-task-def.json
 #
-#     # タスク定義.jsonのSVC_CODE部分を置換
-#     - name: Rewrite task-definition service code
-#       run: sed -i -e s/SVC_CODE/${{ secrets.SVC_CODE }}/g ./ecs/dev-task-def.json
+#        # GitのコミットID（ハッシュ）をタスク定義.jsonに反映
+#      #- name: Rewrite task-definition git commit hash
+#      #  run: sed -i -e s/TARGET_COMMIT_HASH/${{ github.sha }}/g ./ecs/dev-task-def.json
 #
-#       # GitのコミットID（ハッシュ）をタスク定義.jsonに反映
-#     #- name: Rewrite task-definition git commit hash
-#     #  run: sed -i -e s/TARGET_COMMIT_HASH/${{ github.sha }}/g ./ecs/dev-task-def.json
+#      ## タスク定義.jsonのアプリコンテナのイメージ部分を動的に更新
+#      - name: Render Amazon ECS task definition for app container
+#        id: render-app-container
+#        uses: aws-actions/amazon-ecs-render-task-definition@v1
+#        with:
+#          task-definition: ./ecs/dev-task-def.json
+#          container-name: dev-${{ secrets.SVC_CODE }}-ecs-webapp-svc-container
+#          image: ${{ steps.build-image.outputs.image }}
 #
-#     ## タスク定義.jsonのアプリコンテナのイメージ部分を動的に更新
-#     - name: Render Amazon ECS task definition for app container
-#       id: render-app-container
-#       uses: aws-actions/amazon-ecs-render-task-definition@v1
-#       with:
-#         task-definition: ./ecs/dev-task-def.json
-#         container-name: dev-${{ secrets.SVC_CODE }}-ecs-webapp-svc-container
-#         image: ${{ steps.build-image.outputs.image }}
-#
-#     ## タスクを更新してアプリをデプロイ
-#     - name: Deploy to Amazon ECS
-#       uses: aws-actions/amazon-ecs-deploy-task-definition@v1
-#       with:
-#         task-definition: ${{ steps.render-app-container.outputs.task-definition }}
-#         service: dev-${{ secrets.SVC_CODE }}-ecs-webapp-svc
-#         cluster: dev-${{ secrets.SVC_CODE }}-ecs-webapp-cluster
-#         wait-for-service-stability: true
+#      ## タスクを更新してアプリをデプロイ
+#      - name: Deploy to Amazon ECS
+#        uses: aws-actions/amazon-ecs-deploy-task-definition@v1
+#        with:
+#          task-definition: ${{ steps.render-app-container.outputs.task-definition }}
+#          service: dev-${{ secrets.SVC_CODE }}-ecs-webapp-svc
+#          cluster: dev-${{ secrets.SVC_CODE }}-ecs-webapp-cluster
+#          wait-for-service-stability: true
 #

@@ -3,7 +3,7 @@
     {
       "cpu": 256,
       "essential": true,
-      "image": "public.ecr.aws/nginx/nginx:stable-perl",
+      "image": "{{ tfstate `module.frontend-ecr.aws_ecr_repository.myecr.repository_url` }}:{{ must_env `IMAGE_TAG` }}",
       "logConfiguration": {
         "logDriver": "awslogs",
         "options": {
