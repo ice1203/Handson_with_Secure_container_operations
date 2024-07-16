@@ -11,6 +11,8 @@ on:
       - opened
       - synchronize
       - reopened
+    paths:
+      - 'terraform/**'
 
 env:
   ROOT_MODULE_PATH: ./environments/dev
