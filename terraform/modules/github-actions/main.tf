@@ -33,9 +33,9 @@ resource "aws_iam_role" "githubactions" {
     ]
   })
 }
-resource "aws_iam_role_policy_attachment" "githubactions_poweruser" {
+resource "aws_iam_role_policy_attachment" "githubactions_admin" {
   role       = aws_iam_role.githubactions.name
-  policy_arn = "arn:aws:iam::aws:policy/PowerUserAccess"
+  policy_arn = "arn:aws:iam::aws:policy/AdministratorAccess"
 }
 
 #trivy:ignore:AVD-AWS-0057

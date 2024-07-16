@@ -1,4 +1,4 @@
-# ECSのデプロイ
+# 開発環境のセットアップ
 
 ## AWS アカウントへのログイン
 
@@ -14,22 +14,25 @@ https://ap-northeast-1.console.aws.amazon.com/cloud9/home?region=ap-northeast-1
 1. *環境を作成* を選択
 2. *ecs-handson* という名前にします
 3. インスタンスタイプを *t3.small* に変更します
-4. *VPC設定* をクリックして展開します
-5. Amazon 仮想プライベートクラウド (VPC)の欄で、 *ecs-handson-vpc* という名前のVPCを選択します
-6. サブネットの欄で、 *ecs-handson-vpc-private-ap-northeast-1c* という名前のサブネットを選択します
+    1. <img src="../images/module2/AWS_Cloud9-2.jpg" width=100%>
+4. ネットワーク設定の箇所にある *VPC設定* をクリックして展開します
+5. Amazon 仮想プライベートクラウド (VPC)の欄で、 *ecs-handson-c9-vpc* という名前のVPCを選択します
+6. サブネットの欄で、 *ecs-handson-c9-vpc-public-ap-northeast-1c* という名前のサブネットを選択します
 7. 作成ボタンをクリックします
 8. しばらくしてから、Cloud9 IDE列の *開く* をクリックしてCloud9を開きます
-9. 「Information: AWS Toolkit - Amazon Q,Codewhisperer, and more」というウィンドウが表示されたら、 *Don't Show Again* をクリックします
+9.  「Information: AWS Toolkit - Amazon Q,Codewhisperer, and more」というウィンドウが表示されたら、 *Don't Show Again* をクリックします
+    1.  <img src="../images/module2/Cloud9-1.jpg" width=100%>
 10. 以下のURLをクリックしてCloud9のEC2インスタンスを選択します
     1.  https://console.aws.amazon.com/ec2/v2/home?#Instances:tag:Name=aws-cloud9-ecs-handson;sort=desc:launchTime
-11. インスタンスを選択し、*アクション/セキュリティ/IAMロールの変更* を選択します。
-12. IAMロールのドロップダウンから *ecs-handson-cloud9* を選択し、保存を選択します。
+11. インスタンスを選択してから右クリックをし、*セキュリティ/IAMロールの変更* を選択します。
+    1.  <img src="../images/module2/Cloud9-3.jpg" width=100%>
+12. IAMロールのドロップダウンから *ecs-handson-cloud9* を選択し、IAMロールの更新を選択します。
 
 ## Cloud9のセットアップ
 
 1. Cloud9のターミナル画面に戻ります
 2. Cloud9の設定画面を開き、*AWS Settings/Credentials/AWS Managed temporary credentials* を無効（赤い☓マーク）にします
-    1. 上記の図
+    1. <img src="../images/module2/AWS_Cloud9-1.jpg" width=100%>
 3. 環境変数を設定し、読み込ませます
     1. ```
         echo "export AWS_DEFAULT_REGION=ap-northeast-1" >> ~/.bashrc
@@ -82,10 +85,34 @@ https://ap-northeast-1.console.aws.amazon.com/cloud9/home?region=ap-northeast-1
        fi
 7. コマンドが成功するとCloud9のインスタンスが再起動されます。再度立ち上がってくるまでしばらくお待ちください
 
-## ECSデプロイ
+## 必要なツールやリポジトリのクローン
+
+Cloud9が起動してきたら、以下のコマンドでこのあと使用するツールをインストールします
 
 ```
+# tfenvインストール
+git clone https://github.com/tfutils/tfenv.git ~/.tfenv
+sudo ln -s ~/.tfenv/bin/* /usr/local/bin
+# tfenvインストール確認
+tfenv -v
+```
+
+## ECS初回デプロイ
+
+Cloud9が起動してきたら早速、以下のコマンドでECSの初回デプロイを行います
+
+```
+# 本リポジトリをclone
+git clone https://github.com/ice1203/Handson_with_Secure_container_operations.git
+cd Handson_with_Secure_container_operations/terraform/
+touch terraform.tfvars
+echo 'allowed_cidr_blocks = ["＜許可するグローバルIPアドレス＞/32"]' > terraform.tfvars
+# Cloud9上ではなく自端末のターミナルから `curl httpbin.org/ip` コマンドを実行すると分かります
+# 分からない場合は近くのハンズオン担当に聞いてください
+# terraform インストール
+tfenv install
 terraform init -backend-config="bucket=tmp-hands-on-tf-state-$(aws sts get-caller-identity --query Account --output text)"
-set -x AWS_ACCOUNT_ID $(aws sts get-caller-identity --query Account --output text)
-
+terraform plan
+terraform apply
 ```
+[Next: 開発環境のセットアップ](../module3/module3.md)
