@@ -16,8 +16,10 @@ on:
 
 env:
   ROOT_MODULE_PATH: ./environments/dev
+  TFSTATE_BUCKET: tmp-hands-on-tf-state-${{ secrets.AWS_ACCOUNT_ID }}
   PLAN_ROLE_ARN: ${{ vars.DEV_TERRAFORM_PLAN_ROLE_ARN }}
   APPLY_ROLE_ARN: ${{ vars.DEV_TERRAFORM_APPLY_ROLE_ARN }}
+  AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
 
 permissions:
   id-token: write
@@ -54,7 +56,7 @@ jobs:
 
     - name: Terraform Init
       run: |
-        terraform init
+        terraform init -backend-config="${{ env.TFSTATE_BUCKET }}"
       working-directory: ${{ env.ROOT_MODULE_PATH }}
 
     - name: Terraform Format
@@ -233,7 +235,7 @@ jobs:
 
     - name: Terraform Init
       run: |
-        terraform init
+        terraform init -backend-config="${{ env.TFSTATE_BUCKET }}"
       working-directory: ${{ env.ROOT_MODULE_PATH }}
 
     - name: Download Terraform Plan
