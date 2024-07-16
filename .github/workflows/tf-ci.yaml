@@ -22,7 +22,7 @@ jobs:
     runs-on: ubuntu-22.04
     strategy:
       matrix:
-        workdir: [terraform/main, terraform/network]
+        workdir: [./terraform, ./terraform/modules/ecr]
     permissions:
       id-token: write
       contents: read
@@ -38,8 +38,11 @@ jobs:
       with:
         terraform_version: ${{ matrix.TF_VERSION }}
     - name: Terraform init
+      working-directory: matrix.workdir
       run: terraform init
     - name: Terraform fmt
+      working-directory: matrix.workdir
       run: terraform fmt
     - name: Terraform plan
+      working-directory: matrix.workdir
       run: terraform plan -no-color
