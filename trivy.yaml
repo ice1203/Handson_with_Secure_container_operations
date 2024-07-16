@@ -3,3 +3,6 @@ exit-code: 1
 severity:
   - CRITICAL
   - HIGH
+misconfiguration:
+  terraform:
+    exclude-downloaded-modules: true
