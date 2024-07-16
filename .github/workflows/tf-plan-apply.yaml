@@ -15,7 +15,7 @@ on:
       - 'terraform/**'
 
 env:
-  ROOT_MODULE_PATH: ./environments/dev
+  ROOT_MODULE_PATH: environments/dev
   TFSTATE_BUCKET: tmp-hands-on-tf-state-${{ secrets.AWS_ACCOUNT_ID }}
   PLAN_ROLE_ARN: ${{ vars.DEV_TERRAFORM_PLAN_ROLE_ARN }}
   APPLY_ROLE_ARN: ${{ vars.DEV_TERRAFORM_APPLY_ROLE_ARN }}
