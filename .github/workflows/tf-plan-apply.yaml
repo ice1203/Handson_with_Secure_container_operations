@@ -93,8 +93,12 @@ jobs:
     - name: Trivy Scan
       id: trivy-scan
       uses: aquasecurity/trivy-action@0.24.0
+      env:
+        TRIVY_TF_EXCLUDE_DOWNLOADED_MODULES: "true"
       with:
-        trivy-config: ./trivy.yaml
+        scan-type: config
+        exit-code: '1'
+        severity: 'CRITICAL,HIGH'
         output: 'trivy-table'
 
     - name: Terraform Plan
