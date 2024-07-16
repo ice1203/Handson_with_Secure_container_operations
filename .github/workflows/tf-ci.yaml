@@ -39,7 +39,7 @@ jobs:
         terraform_version: ${{ matrix.TF_VERSION }}
     - name: Terraform init
       working-directory: ${{ matrix.workdir }}
-      run: terraform init
+      run: terraform init -backend-config="bucket=tmp-hands-on-tf-state-${{ env.AWS_ACCOUNT_ID }}"
     - name: Terraform fmt
       working-directory: ${{ matrix.workdir }}
       run: terraform fmt
