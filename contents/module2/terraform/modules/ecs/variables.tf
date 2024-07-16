@@ -23,11 +23,12 @@ variable "public_subnets" {
   description = "public subnets"
 
 }
-variable "private_subnets" {
-  type        = list(string)
-  description = "private subnets"
-
-}
+# ecsサービスで使用していた変数。ecspressoで管理するためコメントアウト
+#variable "private_subnets" {
+#  type        = list(string)
+#  description = "private subnets"
+#
+#}
 variable "alb_listener_port" {
   type        = number
   description = "alb listener port"

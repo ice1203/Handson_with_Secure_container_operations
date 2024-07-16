@@ -18,7 +18,7 @@
   "loadBalancers": [
     {
       "containerName": "main_app",
-      "containerPort": 80,
+      "containerPort": 8080,
       "targetGroupArn": "{{ tfstate `module.frontend-ecs.aws_lb_target_group.webapp_alb.arn` }}"
     }
   ],
