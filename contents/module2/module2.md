@@ -104,6 +104,11 @@ Cloud9が起動してきたら早速、以下のコマンドでECSの初回デ�
 ```
 # 本リポジトリをclone
 git clone https://github.com/ice1203/Handson_with_Secure_container_operations.git
+```
+
+`terraform/main.tf`を見てみます。
+
+```
 cd Handson_with_Secure_container_operations/terraform/
 touch terraform.tfvars
 echo 'allowed_cidr_blocks = ["＜許可するグローバルIPアドレス＞/32"]' > terraform.tfvars
