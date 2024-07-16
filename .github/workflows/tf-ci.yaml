@@ -38,11 +38,11 @@ jobs:
       with:
         terraform_version: ${{ matrix.TF_VERSION }}
     - name: Terraform init
-      working-directory: matrix.workdir
+      working-directory: ${{ matrix.workdir }}
       run: terraform init
     - name: Terraform fmt
-      working-directory: matrix.workdir
+      working-directory: ${{ matrix.workdir }}
       run: terraform fmt
     - name: Terraform plan
-      working-directory: matrix.workdir
+      working-directory: ${{ matrix.workdir }}
       run: terraform plan -no-color
