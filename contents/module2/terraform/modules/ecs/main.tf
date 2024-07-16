@@ -155,7 +155,7 @@ resource "aws_lb" "webapp_alb" {
 
 ## ALB target group
 resource "aws_lb_target_group" "webapp_alb" {
-  name                 = "${var.sys_name}-${var.env_name}-${var.subsys_name}-ecs-alb-tg"
+  name_prefix          = "webecs"
   port                 = var.docker_container_port
   protocol             = "HTTP"
   target_type          = "ip"
@@ -170,6 +170,9 @@ resource "aws_lb_target_group" "webapp_alb" {
     timeout             = "5"
     unhealthy_threshold = "3"
     healthy_threshold   = "3"
+  }
+  lifecycle {
+    create_before_destroy = true
   }
 
 }

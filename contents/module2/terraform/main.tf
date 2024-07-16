@@ -58,7 +58,7 @@ module "frontend-ecs" {
   #private_subnets       = module.vpc.private_subnets
   public_subnets        = module.vpc.public_subnets
   alb_listener_port     = 80
-  docker_container_port = 80
+  docker_container_port = 8080
   #ecr_repository_url    = module.frontend-ecr.ecr_repository_url
   alb_allowed_cidr_blocks = module.vpc.private_subnets_cidr_blocks
   allowed_cidr_blocks     = var.allowed_cidr_blocks
