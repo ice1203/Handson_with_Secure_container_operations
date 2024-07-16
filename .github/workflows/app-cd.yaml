@@ -1,58 +1,58 @@
 name: App Deploy
 
 on:
-    push:
-        branches:
-            - main
-            - develop-branch
-        paths:
-            - 'app/**'
+  push:
+    branches:
+      - main
+      - develop-branch
+    paths:
+      - 'app/**'
 
 jobs:
-    deploy:
-        runs-on: ubuntu-22.04
-        env:
-            AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
-            AWS_REGION: ap-northeast-1
-            ECR_REPOSITORY_NAME: ${{ secrets.ECR_REPOSITORY_NAME }}
-            ASSUME_ROLE: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/${{ secrets.ACTIONS_ROLE }}
-        permissions:
-            id-token: write
-            contents: read
-        steps:
-        -   uses: actions/checkout@v4
-        -   name: Configure AWS credentials
-            uses: aws-actions/configure-aws-credentials@v4
-            with:
-                role-to-assume: ${{ env.ASSUME_ROLE }}
-                aws-region: ${{ env.AWS_REGION }}
+  deploy:
+    runs-on: ubuntu-22.04
+    env:
+      AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
+      AWS_REGION: ap-northeast-1
+      ECR_REPOSITORY_NAME: ${{ secrets.ECR_REPOSITORY_NAME }}
+      ASSUME_ROLE: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/${{ secrets.ACTIONS_ROLE }}
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+    - uses: actions/checkout@v4
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        role-to-assume: ${{ env.ASSUME_ROLE }}
+        aws-region: ${{ env.AWS_REGION }}
 
-        # ECRへログイン
-        -   name: Login to Amazon ECR
-            id: login-ecr
-            uses: aws-actions/amazon-ecr-login@v2
+    # ECRへログイン
+    - name: Login to Amazon ECR
+      id: login-ecr
+      uses: aws-actions/amazon-ecr-login@v2
 
-        # イメージをビルドしてコミットID（ハッシュ）でタグ付け
-        -   name: Build, tag, and push image to Amazon ECR
-            working-directory: ./app/javascript-sample-app
-            id: build-image
-            env:
-                ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-                ECR_REPOSITORY: ${{ env.ECR_REPOSITORY_NAME }}
-                IMAGE_TAG: ${{ github.sha }}
-                ENV_NAME: development
-            run: |
-                docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG -f ./Dockerfile .
-                docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
-                echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
+    # イメージをビルドしてコミットID（ハッシュ）でタグ付け
+    - name: Build, tag, and push image to Amazon ECR
+      working-directory: ./app/javascript-sample-app
+      id: build-image
+      env:
+        ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        ECR_REPOSITORY: ${{ env.ECR_REPOSITORY_NAME }}
+        IMAGE_TAG: ${{ github.sha }}
+        ENV_NAME: development
+      run: |
+        docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG -f ./Dockerfile .
+        docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+        echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
 
-        -   name: "ecspressoのインストール"
-            uses: kayac/ecspresso@v2
-            with:
-                version: v2.3.5
+    - name: "ecspressoのインストール"
+      uses: kayac/ecspresso@v2
+      with:
+        version: v2.3.5
 
-        -   name: "ecspressoを使ってECSへのデプロイを実行"
-            run: ecspresso deploy --config ecspresso.yml --tasks=1
-            working-directory: ./app/
-            env:
-                IMAGE_TAG: ${{ github.sha }}
+    - name: "ecspressoを使ってECSへのデプロイを実行"
+      run: ecspresso deploy --config ecspresso.yml --tasks=1
+      working-directory: ./app/
+      env:
+        IMAGE_TAG: ${{ github.sha }}
