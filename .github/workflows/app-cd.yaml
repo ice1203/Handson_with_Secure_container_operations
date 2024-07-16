@@ -6,7 +6,7 @@ on:
             - main
             - develop-branch
         paths:
-            - 'contents/module2/app/**'
+            - 'app/**'
 
 jobs:
     deploy:
@@ -34,7 +34,7 @@ jobs:
 
         # イメージをビルドしてコミットID（ハッシュ）でタグ付け
         -   name: Build, tag, and push image to Amazon ECR
-            working-directory: ./contents/module2/app/javascript-sample-app
+            working-directory: ./app/javascript-sample-app
             id: build-image
             env:
                 ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
@@ -53,6 +53,6 @@ jobs:
 
         -   name: "ecspressoを使ってECSへのデプロイを実行"
             run: ecspresso deploy --config ecspresso.yml --tasks=1
-            working-directory: ./contents/module2/app/
+            working-directory: ./app/
             env:
                 IMAGE_TAG: ${{ github.sha }}
