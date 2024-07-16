@@ -14,8 +14,8 @@ jobs:
     env:
       AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
       AWS_REGION: ap-northeast-1
-      ECR_REPOSITORY_NAME: ${{ secrets.ECR_REPOSITORY_NAME }}
-      ASSUME_ROLE: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/${{ secrets.ACTIONS_ROLE }}
+      ECR_REPOSITORY_NAME: ${{ vars.ECR_REPOSITORY_NAME }}
+      ASSUME_ROLE: ${{ vars.DEV_APP_DEPLOY_ROLE_ARN }}
     permissions:
       id-token: write
       contents: read

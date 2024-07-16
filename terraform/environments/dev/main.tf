@@ -1,6 +1,7 @@
 data "aws_caller_identity" "current" {}
 locals {
-  sys_name       = "ecs"
+  #sys_name       = "ecs"
+  sys_name       = "ecs4"
   env_name       = "handson"
   aws_account_id = data.aws_caller_identity.current.account_id
 }
@@ -31,7 +32,7 @@ module "vpc" {
   }
 }
 module "githubactions_role" {
-  source = "./modules/github-actions"
+  source = "../../modules/github-actions"
 
   sys_name       = local.sys_name
   env_name       = local.env_name
@@ -41,7 +42,7 @@ module "githubactions_role" {
 
 }
 module "frontend-ecr" {
-  source = "./modules/ecr"
+  source = "../../modules/ecr"
 
   sys_name    = local.sys_name
   env_name    = local.env_name
@@ -49,7 +50,7 @@ module "frontend-ecr" {
 
 }
 module "frontend-ecs" {
-  source = "./modules/ecs"
+  source = "../../modules/ecs"
 
   sys_name    = local.sys_name
   env_name    = local.env_name
