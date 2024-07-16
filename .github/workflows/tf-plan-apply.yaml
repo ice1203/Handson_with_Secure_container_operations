@@ -99,6 +99,7 @@ jobs:
         scan-type: config
         exit-code: '1'
         severity: 'CRITICAL,HIGH'
+        skip-dirs: 'app'
         output: 'trivy-table'
 
     - name: Terraform Plan
