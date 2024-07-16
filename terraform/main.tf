@@ -1,6 +1,6 @@
 data "aws_caller_identity" "current" {}
 locals {
-  sys_name       = "ecs"
+  sys_name       = "ecs2"
   env_name       = "handson"
   aws_account_id = data.aws_caller_identity.current.account_id
 }
