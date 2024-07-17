@@ -146,4 +146,16 @@ terraform init -backend-config="bucket=tmp-hands-on-tf-state-$(aws sts get-calle
 terraform plan
 terraform apply
 ```
+
+作成できたら、ご自身のGitHubリポジトリにpushしましょう
+
+1. まず「Handson_with_Secure_container_operations」という名前のリポジトリをご自身のGitHubアカウント上で作成してください。
+2. 以下のコマンドを実行してください
+    1. ```
+        git remote add myrepo https://github.com/<ご自身のGitHubID>/Handson_with_Secure_container_operations.git
+        # リポジトリ追加されたことを確認
+        git remote -v
+        # push
+        git push myrepo main
+
 [Next: GitHub Actionsを使ったインフラのCI/CD](../module3/module3.md)

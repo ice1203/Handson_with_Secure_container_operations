@@ -19,10 +19,10 @@ on:
 env:
   ROOT_MODULE_PATH: terraform/environments/dev
   TFSTATE_BUCKET: tmp-hands-on-tf-state-${{ secrets.AWS_ACCOUNT_ID }}
-  PLAN_ROLE_ARN: ${{ vars.DEV_TERRAFORM_PLAN_ROLE_ARN }}
-  APPLY_ROLE_ARN: ${{ vars.DEV_TERRAFORM_APPLY_ROLE_ARN }}
   AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
-  TF_VAR_allowed_cidr_blocks: ${{ secrets.TF_VAR_allowed_cidr_blocks }}
+  PLAN_ROLE_ARN: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/ecs-handson-githubactions
+  APPLY_ROLE_ARN: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/ecs-handson-githubactions
+  #TF_VAR_allowed_cidr_blocks: ${{ secrets.TF_VAR_allowed_cidr_blocks }}
 
 permissions:
   id-token: write
