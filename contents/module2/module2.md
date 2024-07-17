@@ -99,17 +99,43 @@ tfenv -v
 
 ## ECS初回デプロイ
 
-Cloud9が起動してきたら早速、以下のコマンドでECSの初回デプロイを行います
+Terraformによる初回デプロイを行うためにリポジトリをcloneしてきます
 
 ```
 # 本リポジトリをclone
 git clone https://github.com/ice1203/Handson_with_Secure_container_operations.git
 ```
 
-`terraform/main.tf`を見てみます。
+`terraform/environments/dev/main.tf`を見てみます。
+Terraformが作るAWSリソースは以下の通りです。
+
+<img src="../images/module2/arch_by_terraform-1.png" width=100%>
+
+ECSサービスやECSタスク定義はTerraformの中では作成されない点を覚えておいてください。
+
+またこのタイミングで `githubactions_role` モジュール内にある `github_owner`の値をご自身のGitHubIDに変更します。
+GitHubIDはブラウザでご自身のGitHubで適当なリポジトリを開いたときのURLの以下の部分になります。
+
+<img src="../images/module2/githubid.jpg" width=100%>
+
+・terraform/environments/dev/main.tf
+```
+module "githubactions_role" {
+  source = "./modules/github-actions"
+
+  sys_name       = local.sys_name
+  env_name       = local.env_name
+  github_owner   = "ice1203" ←ここを変更
+  github_repo    = "Handson_with_Secure_container_operations"
+  aws_account_id = local.aws_account_id
+
+}
+```
+
+それではTerraformで上記のAWSリソースを作成します。
 
 ```
-cd Handson_with_Secure_container_operations/terraform/
+cd Handson_with_Secure_container_operations/terraform/environments/dev/
 touch terraform.tfvars
 echo 'allowed_cidr_blocks = ["＜許可するグローバルIPアドレス＞/32"]' > terraform.tfvars
 # Cloud9上ではなく自端末のターミナルから `curl httpbin.org/ip` コマンドを実行すると分かります
@@ -120,4 +146,4 @@ terraform init -backend-config="bucket=tmp-hands-on-tf-state-$(aws sts get-calle
 terraform plan
 terraform apply
 ```
-[Next: 開発環境のセットアップ](../module3/module3.md)
+[Next: GitHub Actionsを使ったインフラのCI/CD](../module3/module3.md)

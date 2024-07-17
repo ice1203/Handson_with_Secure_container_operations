@@ -1,0 +1,255 @@
+name: 'Terraform Plan/Apply'
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+    types:
+      - opened
+      - synchronize
+      - reopened
+    paths:
+      - 'terraform/**'
+
+env:
+  ROOT_MODULE_PATH: terraform/environments/dev
+  TFSTATE_BUCKET: tmp-hands-on-tf-state-${{ secrets.AWS_ACCOUNT_ID }}
+  PLAN_ROLE_ARN: ${{ vars.DEV_TERRAFORM_PLAN_ROLE_ARN }}
+  APPLY_ROLE_ARN: ${{ vars.DEV_TERRAFORM_APPLY_ROLE_ARN }}
+  AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
+  TF_VAR_allowed_cidr_blocks: ${{ secrets.TF_VAR_allowed_cidr_blocks }}
+
+permissions:
+  id-token: write
+  contents: read
+  pull-requests: write
+
+jobs:
+  terraform-plan:
+    name: 'Terraform Plan'
+    runs-on: ubuntu-latest
+    outputs:
+      tfplanExitCode: ${{ steps.tf-plan.outputs.exitcode }}
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Set AWS Credential
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        role-to-assume: ${{ env.PLAN_ROLE_ARN }}
+        aws-region: ap-northeast-1
+
+    - name: Get Terraform Version
+      id: tf-version
+      run: |
+        echo "TERRAFORM_VERSION=$(cat .terraform-version)" >> $GITHUB_OUTPUT
+
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v3
+      with:
+        terraform_version: ${{ steps.tf-version.outputs.TERRAFORM_VERSION }}
+        terraform_wrapper: false
+
+    - name: Terraform Init
+      run: |
+        terraform init -backend-config="bucket=${{ env.TFSTATE_BUCKET }}"
+      working-directory: ${{ env.ROOT_MODULE_PATH }}
+
+    - name: Terraform Format
+      id: tf-fmt
+      run: |
+        terraform fmt -check -recursive
+
+    - name: Terraform Validate
+      id: tf-validate
+      run: |
+        terraform validate
+      working-directory: ${{ env.ROOT_MODULE_PATH }}
+
+    - name: Setup TFLint
+      uses: terraform-linters/setup-tflint@v4
+      with:
+        tflint_version: v0.52.0
+        tflint_wrapper: true
+
+    - name: Init TFLint
+      run: |
+        tflint --init
+
+    - name: TFLint
+      id: tflint
+      run: |
+        tflint --config=${{ github.workspace }}/.tflint.hcl --recursive
+
+    - name: TFLint ExitCode Check
+      id: tflint-exitcode-check
+      run: |
+        exit ${{ steps.tflint.outputs.exitcode }}
+
+    - name: Trivy Scan
+      id: trivy-scan
+      uses: aquasecurity/trivy-action@0.24.0
+      env:
+        TRIVY_TF_EXCLUDE_DOWNLOADED_MODULES: "true"
+      with:
+        scan-type: config
+        exit-code: '1'
+        severity: 'CRITICAL,HIGH'
+        skip-dirs: 'app'
+        output: 'trivy-table'
+
+    - name: Terraform Plan
+      id: tf-plan
+      run: |
+        export exitcode=0
+        terraform plan -detailed-exitcode -no-color -out=tfplan || export exitcode=$?
+
+        echo "exitcode=$exitcode" >> $GITHUB_OUTPUT
+
+        if [ $exitcode -eq 1 ]; then
+          echo Terraform Plan Failed!
+          exit 1
+        else
+          exit 0
+        fi
+      working-directory: ${{ env.ROOT_MODULE_PATH }}
+
+    - name: Publish Terraform Plan
+      uses: actions/upload-artifact@v4
+      with:
+        name: tfplan
+        path: ${{ env.ROOT_MODULE_PATH }}/tfplan
+
+    - name: Create String Output
+      if: always()
+      id: string-output
+      run: |
+        function get_result() {
+          if [ "$1" = "success" ]; then
+            echo ':white_check_mark: **Success**'
+          elif [ "$1" = "failure" ]; then
+            echo ':x: **Failed**'
+          elif [ "$1" = "skipped" ]; then
+            echo ':fast_forward: **Skipped**'
+          elif [ "$1" = "cancelled" ]; then
+            echo ':no_entry: **Cancelled**'
+          else
+            echo ':question: **Unknown**'
+          fi
+        }
+
+        if [ "${{ steps.tf-plan.outcome}}" = "success" ]; then
+          pushd ${{ env.ROOT_MODULE_PATH }}
+          TERRAFORM_PLAN=$(terraform show -no-color tfplan)
+          popd
+        fi
+
+        delimiter="$(openssl rand -hex 8)"
+        echo "summary<<${delimiter}" >> $GITHUB_OUTPUT
+        echo "#### Terraform Format and Style :pencil2: $(get_result ${{ steps.tf-fmt.outcome }})" >> $GITHUB_OUTPUT
+        echo "#### Terraform Validate :hammer_and_wrench: $(get_result ${{ steps.tf-validate.outcome }})" >> $GITHUB_OUTPUT
+        echo "#### TFLint Check :shirt: $(get_result ${{ steps.tflint-exitcode-check.outcome }})" >> $GITHUB_OUTPUT
+        echo "#### Trivy Scan :shield: $(get_result ${{ steps.trivy-scan.outcome }})" >> $GITHUB_OUTPUT
+        echo "#### Terraform Plan :page_facing_up: $(get_result ${{ steps.tf-plan.outcome }})" >> $GITHUB_OUTPUT
+
+        echo "---" >> $GITHUB_OUTPUT
+
+        if [ "${{ steps.tflint-exitcode-check.outcome }}" = "failure" ]; then
+          echo "### TFLint Result" >> $GITHUB_OUTPUT
+          echo "<details><summary>Click to expand</summary>" >> $GITHUB_OUTPUT
+          echo "" >> $GITHUB_OUTPUT
+          echo '```' >> $GITHUB_OUTPUT
+          echo "${{ steps.tflint.outputs.stdout }}" >> $GITHUB_OUTPUT
+          echo '```' >> $GITHUB_OUTPUT
+          echo "</details>" >> $GITHUB_OUTPUT
+        fi
+
+        if [ "${{ steps.trivy-scan.outcome }}" = "failure" ]; then
+          echo "### Trivy Scan Result" >> $GITHUB_OUTPUT
+          echo "<details><summary>Click to expand</summary>" >> $GITHUB_OUTPUT
+          echo "" >> $GITHUB_OUTPUT
+          echo '```' >> $GITHUB_OUTPUT
+          cat trivy-table >> $GITHUB_OUTPUT
+          echo '```' >> $GITHUB_OUTPUT
+          echo "</details>" >> $GITHUB_OUTPUT
+        fi
+
+        if [ "${{ steps.tf-plan.outcome}}" = "success" ]; then
+          echo "### Terraform Plan" >> $GITHUB_OUTPUT
+          echo "<details><summary>Click to expand</summary>" >> $GITHUB_OUTPUT
+          echo "" >> $GITHUB_OUTPUT
+          echo '```' >> $GITHUB_OUTPUT
+          echo "$TERRAFORM_PLAN" >> $GITHUB_OUTPUT
+          echo '```' >> $GITHUB_OUTPUT
+          echo "</details>" >> $GITHUB_OUTPUT
+        fi
+
+        echo "${delimiter}" >> $GITHUB_OUTPUT
+
+    - name: Publish Terraform CI Result to Task Summary
+      if: always()
+      env:
+        SUMMARY: ${{ steps.string-output.outputs.summary }}
+      run: |
+        echo "$SUMMARY" >> $GITHUB_STEP_SUMMARY
+
+    - name: Push Terraform Output to PR
+      if: always() && github.ref != 'refs/heads/main'
+      uses: actions/github-script@v7
+      env:
+        SUMMARY: ${{ steps.string-output.outputs.summary }}
+      with:
+        script: |
+          const body = `${process.env.SUMMARY}`;
+          github.rest.issues.createComment({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            body: body
+          })
+
+  terraform-apply:
+    name: 'Terraform Apply'
+    if: github.ref == 'refs/heads/main' && needs.terraform-plan.outputs.tfplanExitCode == 2
+    runs-on: ubuntu-latest
+    needs: [terraform-plan]
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Set AWS Credential
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        role-to-assume: ${{ env.APPLY_ROLE_ARN }}
+        aws-region: ap-northeast-1
+
+    - name: Get Terraform Version
+      id: tf-version
+      run: |
+        echo "TERRAFORM_VERSION=$(cat .terraform-version)" >> $GITHUB_OUTPUT
+
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v3
+      with:
+        terraform_version: ${{ steps.tf-version.outputs.TERRAFORM_VERSION }}
+
+    - name: Terraform Init
+      run: |
+        terraform init -backend-config="bucket=${{ env.TFSTATE_BUCKET }}"
+      working-directory: ${{ env.ROOT_MODULE_PATH }}
+
+    - name: Download Terraform Plan
+      uses: actions/download-artifact@v4
+      with:
+        name: tfplan
+        path: ${{ env.ROOT_MODULE_PATH }}
+
+    - name: Terraform Apply
+      run: terraform apply -auto-approve tfplan
+      working-directory: ${{ env.ROOT_MODULE_PATH }}
