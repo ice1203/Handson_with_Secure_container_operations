@@ -155,6 +155,8 @@ terraform apply
 作成できたら、ご自身のGitHubリポジトリにpushしましょう
 
 1. まず「Handson_with_Secure_container_operations」という名前のリポジトリをご自身のGitHubアカウント上で作成してください。
+> [!IMPORTANT]
+> 必ずパブリックリポジトリを作成してください。プライベートリポジトリの場合、GitHubActionsのワークフローの実行時間に制限がかかるためです
 2. 以下のコマンドを実行してください
     1. ```
         git remote add myrepo https://github.com/<ご自身のGitHubID>/Handson_with_Secure_container_operations.git
