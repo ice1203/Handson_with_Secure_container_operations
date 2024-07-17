@@ -60,3 +60,14 @@ jobs:
       working-directory: ./app/
       env:
         IMAGE_TAG: TEST_${{ github.sha }}
+
+    # pushしたイメージの削除
+    - name: Delete image
+      id: delete-image
+      env:
+        ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        ECR_REPOSITORY: ${{ env.ECR_REPOSITORY_NAME }}
+        IMAGE_TAG: TEST_${{ github.sha }}
+        ENV_NAME: development
+      run: |
+        aws ecr batch-delete-image --repository-name $ECR_REPOSITORY --image-ids imageTag=$IMAGE_TAG
