@@ -118,7 +118,7 @@ GitHubIDはブラウザでご自身のGitHubで適当なリポジトリを開い
 
 <img src="../images/module2/githubid.jpg" width=100%>
 
-・terraform/environments/dev/main.tf
+・terraform/environments/common/main.tf
 ```
 module "githubactions_role" {
   source = "./modules/github-actions"
@@ -135,11 +135,16 @@ module "githubactions_role" {
 それではTerraformで上記のAWSリソースを作成します。
 
 ```
-cd Handson_with_Secure_container_operations/terraform/environments/dev/
-touch terraform.tfvars
-echo 'allowed_cidr_blocks = ["＜許可するグローバルIPアドレス＞/32"]' > terraform.tfvars
-# Cloud9上ではなく自端末のターミナルから `curl httpbin.org/ip` コマンドを実行すると分かります
-# 分からない場合は近くのハンズオン担当に聞いてください
+# commonのterraform apply（commonでは共通で使用するgithub actions用ロールを作成）
+cd Handson_with_Secure_container_operations/terraform/environments/common/
+# terraform インストール
+tfenv install
+terraform init -backend-config="bucket=tmp-hands-on-tf-state-$(aws sts get-caller-identity --query Account --output text)"
+terraform plan
+terraform apply
+
+# devのterraform apply
+cd ../dev/
 # terraform インストール
 tfenv install
 terraform init -backend-config="bucket=tmp-hands-on-tf-state-$(aws sts get-caller-identity --query Account --output text)"
