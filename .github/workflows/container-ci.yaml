@@ -68,6 +68,7 @@ jobs:
           --apiurl ${SYSDIG_SECURE_ENDPOINT} \
           $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG \
           --console-log \
+          --policy 20240720-sysdig-handson \
           --dbpath=${GITHUB_WORKSPACE}/cache/db/ \
           --cachepath=${GITHUB_WORKSPACE}/cache/scanner-cache/
 
