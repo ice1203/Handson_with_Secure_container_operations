@@ -301,17 +301,72 @@ CI処理には以下のワークフローファイルを使用します。
             # ワークフローファイルの格納
             cd Handson_with_Secure_container_operations/contents/module3/
             git mv tf-plan-apply.yaml ../../.github/workflows/app
-            git commit -m "add terraform workflow"
-            git push myrepo develop
-3. ワークフローファイルの追加ができたので実際に動かしてみます。ブラウザ上でdevelopブランチからmainブランチへのプルリクエストを出します
+3. またこのワークフローでは `terraform` ディレクトリ配下のファイルの変更を検知してワークフローが起動するような設定になっています。そのため `terraform` ディレクトリ配下のファイルを編集します
+    1. `terraform/modules/ecs/main.tf`を開き、107行目付近の以下の箇所のコメントアウトを外してください
+        1. ```
+            ingress {
+                # ↓以下の行のコメントアウトを外す
+                #description = "Allow traffic from ALB"
+                security_groups = [aws_security_group.webapp_alb.id]
+                from_port       = var.docker_container_port
+4. 編集が完了したら、ファイルをGitHubリポジトリにpushします
+    1. ```
+        # コミットとpush
+        git add --all
+        git commit -m "add terraform workflow"
+        git push myrepo develop
+
+5. ワークフローファイルの追加ができたので実際に動かしてみます。ブラウザ上でdevelopブランチからmainブランチへのプルリクエストを出します
     1. <img src="../images/module3/github4.jpg" width=100%>
-4. *New pull request* ボタンをクリックします
+6. *New pull request* ボタンをクリックします
+7. developブランチからmainブランチへのプルリクエストであることを以下のように指定します
+    1. <img src="../images/module3/github5.jpg" width=100%>
+8. *Create pull request* ボタンをクリックします
+9. mainブランチへのプルリクエストをトリガーにワークフロー処理が動き始めたはずです。
+    - しばらく待てばプルリクエストのコメントとして各ツールのチェック状況のサマリが表示されます。
+    - またリポジトリ画面上部の *Actions* タブからも実行の様子が確認できます
+        - <img src="../images/module3/github6.jpg" width=100%>
+10. プルリクエストをトリガーとした、CIのワークフロー処理が正常に完了したら、次はmainブランチにpushをすることで実際にAWS環境へのデプロイを行います
+    1.  プルリクエストの画面に戻り、 *Merge pull request* ボタンをクリックします
+        1.  <img src="../images/module3/github7.jpg" width=100%>
+11. mainブランチへのマージをトリガーに再度、ワークフローが起動します
+    1.  またリポジトリ画面上部の *Actions* タブからも実行の様子を確認してみましょう
 
+## 実行しているツールの紹介
 
+Terraformのワークフロー処理の中で使用されているツールを簡単にご紹介します。
+これらのツールは自身の開発端末上でも使用することが出来、開発端末で使用することでよりTerraformコーディングを効率化することが出来ます
 
-### CI処理のトリガー
+> [!TIP]
+> 開発端末上でこれらのツールを使用する場合は、pre-commitというツールでコミット時に自動で実行するようにすると便利です
+> 公式ページ： https://pre-commit.com/
+> Terraform関連フック： https://github.com/antonbabenko/pre-commit-terraform
 
-- プルリクエストがオープンされたときと更新されたときに処理が実行されます
--
+### tfenv
+
+https://github.com/tfutils/tfenv
+
+- Terraform バイナリのバージョン管理を行うツール
+    - python における pyenv のようなツールです
+- `.terraform-version` ファイルにバージョンを記述することで、引数無しで指定したバージョンの Terraform をインストールすることができる
+    - このファイルを Git 管理することで、プロジェクト内の Terraform バージョンの共通化を行えます
+
+### TFLint
+
+https://github.com/terraform-linters/tflint
+
+- Terraform コードのリンターツールです
+- terraform validateやterraform planでは検知できないエラーを検知することができます
+    - 例えばインスタンスタイプの誤りや命名規約違反等
+
+### Trivy
+
+https://github.com/aquasecurity/trivy
+
+- 概要
+    - 静的解析ツールでセキュリティ上の脆弱性を検出するOSS
+        - 静的解析とはソースコード自体を解析することにより、プログラムを実行せずに問題を発見することを指します
+    - IaCのセキュリティ上問題ある設定や機密情報が埋め込まれていることを検知することにより、セキュリティの問題を未然に防ぐことを目的としています
+    - Terraformの他、CloudFormation、Dockerfile等にも対応しています
 
 [Next: GitHub Actionsを使ったアプリケーションのデプロイ](../module4/module4.md)

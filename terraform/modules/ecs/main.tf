@@ -105,6 +105,7 @@ resource "aws_security_group" "webapp_ecs_task" {
   description = "${var.sys_name}-${var.env_name}-${var.subsys_name}-ecs"
   vpc_id      = var.vpc_id
   ingress {
+    #description = "Allow traffic from ALB"
     security_groups = [aws_security_group.webapp_alb.id]
     from_port       = var.docker_container_port
     to_port         = var.docker_container_port
