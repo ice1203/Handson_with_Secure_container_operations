@@ -7,4 +7,4 @@ timeout: "10m0s"
 plugins:
   - name: tfstate
     config:
-      url: "s3://tmp-hands-on-tf-state-{{must_env `AWS_ACCOUNT_ID`}}/module2/ecs/tfstate"
+      url: "s3://tmp-hands-on-tf-state-{{must_env `AWS_ACCOUNT_ID`}}/dev/handson_ecs/tfstate"
