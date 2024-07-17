@@ -165,7 +165,7 @@ resource "aws_lb_target_group" "webapp_alb" {
     path = "/"
     #path                = "/rolldice"
     protocol            = "HTTP"
-    matcher             = "200,401"
+    matcher             = "200,404"
     interval            = "10"
     timeout             = "5"
     unhealthy_threshold = "3"
