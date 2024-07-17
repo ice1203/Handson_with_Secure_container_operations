@@ -51,6 +51,12 @@ jobs:
       with:
         version: v2.3.5
 
+    - name: ecspresso verify
+      run: ecspresso verify
+      working-directory: ./app/
+      env:
+        IMAGE_TAG: ${{ github.sha }}
+
     - name: "ecspressoを使ってECSへのデプロイを実行"
       run: ecspresso deploy --config ecspresso.yml --tasks=1
       working-directory: ./app/
