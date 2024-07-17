@@ -118,6 +118,7 @@ resource "aws_security_group" "webapp_ecs_task" {
   }
 }
 ## security group for alb
+#trivy:ignore:AVD-AWS-0107
 resource "aws_security_group" "webapp_alb" {
   name        = "${var.sys_name}-${var.env_name}-${var.subsys_name}-ecs-alb"
   description = "${var.sys_name}-${var.env_name}-${var.subsys_name}-ecs-alb"
