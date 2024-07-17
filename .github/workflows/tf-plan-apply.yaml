@@ -20,6 +20,7 @@ env:
   PLAN_ROLE_ARN: ${{ vars.DEV_TERRAFORM_PLAN_ROLE_ARN }}
   APPLY_ROLE_ARN: ${{ vars.DEV_TERRAFORM_APPLY_ROLE_ARN }}
   AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
+  TF_VAR_allowed_cidr_blocks: ${{ secrets.TF_VAR_allowed_cidr_blocks }}
 
 permissions:
   id-token: write
