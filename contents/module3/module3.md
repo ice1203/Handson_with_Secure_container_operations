@@ -281,6 +281,9 @@ CI処理には以下のワークフローファイルを使用します。
 
 ## GitHub ActionsワークフローにインフラのCI/CDを追加する
 
+> [!TIP]
+> 実際にプルリクエストをトリガーとしたワークフローを使う場合は、GitHubのブランチ保護ルールを併用することを推奨します。これによってワークフローが成功していないとマージが不可といったことを実現できます
+
 1. GitHubリポジトリ側でワークフロー内で使用するsecretsの設定をしておきます
     1. ご自身のGitHubリポジトリ画面を開きます。以下のようなURLのはずです
         1. https://github.com/＜自身のGitHubID＞/Handson_with_Secure_container_operations
@@ -315,7 +318,6 @@ CI処理には以下のワークフローファイルを使用します。
         git add --all
         git commit -m "add terraform workflow"
         git push myrepo develop
-
 5. ワークフローファイルの追加ができたので実際に動かしてみます。ブラウザ上でdevelopブランチからmainブランチへのプルリクエストを出します
     1. <img src="../images/module3/github4.jpg" width=100%>
 6. *New pull request* ボタンをクリックします
