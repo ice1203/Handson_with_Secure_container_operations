@@ -135,7 +135,7 @@ module "githubactions_role" {
 それではTerraformで上記のAWSリソースを作成します。
 
 ```
-# commonのterraform apply（commonでは共通で使用するgithub actions用ロールを作成）
+# commonのterraform apply（commonではgithub actions用ロールを作成）
 cd Handson_with_Secure_container_operations/terraform/environments/common/
 # terraform インストール
 tfenv install
