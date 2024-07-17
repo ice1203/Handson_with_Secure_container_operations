@@ -324,6 +324,7 @@ CI処理には以下のワークフローファイルを使用します。
 8. *Create pull request* ボタンをクリックします
 9. mainブランチへのプルリクエストをトリガーにワークフロー処理が動き始めたはずです。
     - しばらく待てばプルリクエストのコメントとして各ツールのチェック状況のサマリが表示されます。
+        - <img src="../images/module3/github8.jpg" width=100%>
     - またリポジトリ画面上部の *Actions* タブからも実行の様子が確認できます
         - <img src="../images/module3/github6.jpg" width=100%>
 10. プルリクエストをトリガーとした、CIのワークフロー処理が正常に完了したら、次はmainブランチにpushをすることで実際にAWS環境へのデプロイを行います
@@ -338,8 +339,8 @@ Terraformのワークフロー処理の中で使用されているツールを�
 これらのツールは自身の開発端末上でも使用することが出来、開発端末で使用することでよりTerraformコーディングを効率化することが出来ます
 
 > [!TIP]
-> 開発端末上でこれらのツールを使用する場合は、pre-commitというツールでコミット時に自動で実行するようにすると便利です
-> 公式ページ： https://pre-commit.com/
+> 開発端末上でこれらのツールを使用する場合は、pre-commitというツールでコミット時に自動で実行するようにすると便利です  
+> 公式ページ： https://pre-commit.com/  
 > Terraform関連フック： https://github.com/antonbabenko/pre-commit-terraform
 
 ### tfenv
