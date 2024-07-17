@@ -18,7 +18,7 @@
 
 const sdk = require("./nodeSDK");
 
-// config test
+// config test2
 const create_cfg = require('./config');
 const cfg = create_cfg.create_config('./config.yaml');
 
