@@ -1,5 +1,5 @@
 # ビルドステージ
-FROM node:16 AS builder
+FROM node:22 AS builder
 
 # アプリケーションのディレクトリを作成
 WORKDIR /usr/src/app
@@ -14,7 +14,7 @@ RUN npm install --production
 COPY . .
 
 # 実行ステージ
-FROM gcr.io/distroless/nodejs:16
+FROM gcr.io/distroless/nodejs22-debian12
 
 # ビルドステージからアプリケーションのディレクトリをコピー
 COPY --from=builder /usr/src/app /usr/src/app
