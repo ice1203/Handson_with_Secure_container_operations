@@ -9,7 +9,7 @@
         "options": {
           "awslogs-group": "{{ tfstate `module.frontend-ecs.aws_cloudwatch_log_group.webapp_ecs_task.name` }}",
           "awslogs-region": "ap-northeast-1",
-          "awslogs-stream-prefix": "mycontainer"
+          "awslogs-stream-prefix": "main_app"
         }
       },
       "memoryReservation": 512,
