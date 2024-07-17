@@ -281,18 +281,31 @@ CI処理には以下のワークフローファイルを使用します。
 
 ## GitHub ActionsワークフローにインフラのCI/CDを追加する
 
-1. GitHub ActionsのワークフローとしてGitHubに認識させるためにはリポジトリ内の所定のディレクトリに置く必要があります
+1. GitHubリポジトリ側でワークフロー内で使用するsecretsの設定をしておきます
+    1. ご自身のGitHubリポジトリ画面を開きます。以下のようなURLのはずです
+        1. https://github.com/＜自身のGitHubID＞/Handson_with_Secure_container_operations
+    2. Settingsを選択します
+        1. <img src="../images/module3/github1.jpg" width=100%>
+    3. Secrets and variablesの「Actions」を選択します
+        1. <img src="../images/module3/github2.jpg" width=100%>
+    4. *New repository secret* ボタンをクリックします
+    5. Secretsに以下を登録します
+        - Name: AWS_ACCOUNT_ID
+        - Secret: <ハンズオンで使用しているAWSアカウントID>
+2. GitHub ActionsのワークフローとしてGitHubに認識させるためにはリポジトリ内の所定のディレクトリに置く必要があります
     1. `contents/module3/tf-plan-apply.yaml`を `.github/workflows` ディレクトリに格納しましょう
-        2. ```
+        1. ```
+            # ブランチの作成、切り替え
+            git branch develop
+            git checkout develop
+            # ワークフローファイルの格納
             cd Handson_with_Secure_container_operations/contents/module3/
             git mv tf-plan-apply.yaml ../../.github/workflows/app
-2. 続いて、GitHubリポジトリ側でワークフロー内で使用するvars,secretsの設定をします
-    1. Settingsを選択します
-        1. <img src="../images/module3/github1.jpg" width=100%>
-    2. Secrets and variablesの「Actions」を選択します
-        1. <img src="../images/module3/github2.jpg" width=100%>
-    3. Secretsに以下を登録します
-        1. AWS_ACCOUNT_ID：<ハンズオンで使用しているAWSアカウントID>
+            git commit -m "add terraform workflow"
+            git push myrepo develop
+3. ワークフローファイルの追加ができたので実際に動かしてみます。ブラウザ上でdevelopブランチからmainブランチへのプルリクエストを出します
+    1. <img src="../images/module3/github4.jpg" width=100%>
+4. *New pull request* ボタンをクリックします
 
 
 
