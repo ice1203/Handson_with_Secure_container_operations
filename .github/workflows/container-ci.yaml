@@ -32,6 +32,11 @@ jobs:
         role-to-assume: ${{ env.ASSUME_ROLE }}
         aws-region: ${{ env.AWS_REGION }}
 
+    # ECRへログイン
+    - name: Login to Amazon ECR
+      id: login-ecr
+      uses: aws-actions/amazon-ecr-login@v2
+
     - name: Setup cache
       uses: actions/cache@v4
       with:
@@ -64,11 +69,6 @@ jobs:
           --console-log \
           --dbpath=${GITHUB_WORKSPACE}/cache/db/ \
           --cachepath=${GITHUB_WORKSPACE}/cache/scanner-cache/
-
-    # ECRへログイン
-    - name: Login to Amazon ECR
-      id: login-ecr
-      uses: aws-actions/amazon-ecr-login@v2
 
     # イメージをビルドしてコミットID（ハッシュ）でタグ付け
     - name: Build, tag, and push image to Amazon ECR
