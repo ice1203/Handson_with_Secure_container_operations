@@ -106,15 +106,16 @@ Terraformによる初回デプロイを行うためにリポジトリをcloneし
 git clone https://github.com/ice1203/Handson_with_Secure_container_operations.git
 ```
 
-`terraform/environments/dev/main.tf`を見てみます。
-Terraformが作るAWSリソースは以下の通りです。
+- `terraform/environments/dev/main.tf`を見てみます。Terraformが作るAWSリソースは以下の通りです。
+    - ECSサービスやECSタスク定義はTerraformの中では作成されない点を覚えておいてください。
 
 <img src="../images/module2/arch_by_terraform-1.png" width=100%>
 
-ECSサービスやECSタスク定義はTerraformの中では作成されない点を覚えておいてください。
 
-またこのタイミングで `githubactions_role` モジュール内にある `github_owner`の値をご自身のGitHubIDに変更します。
-GitHubIDはブラウザでご自身のGitHubで適当なリポジトリを開いたときのURLの以下の部分になります。
+### github_ownerの修正
+
+- このタイミングで `githubactions_role` モジュール内にある `github_owner`の値をご自身のGitHubIDに変更します。
+- GitHubIDはブラウザでご自身のGitHubで適当なリポジトリを開いたときのURLの以下の部分になります。
 
 <img src="../images/module2/githubid.jpg" width=100%>
 
@@ -131,6 +132,8 @@ module "githubactions_role" {
 
 }
 ```
+
+### Terraformによるデプロイ
 
 それではTerraformで上記のAWSリソースを作成します。
 
@@ -151,6 +154,8 @@ terraform init -backend-config="bucket=tmp-hands-on-tf-state-$(aws sts get-calle
 terraform plan
 terraform apply
 ```
+
+## 自身のGitHubリポジトリにpushする
 
 作成できたら、ご自身のGitHubリポジトリにpushしましょう
 

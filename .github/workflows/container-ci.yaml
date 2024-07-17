@@ -1,0 +1,107 @@
+name: Container CI
+
+on:
+  push:
+    branches:
+      - develop
+    paths:
+      - 'app/**'
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'app/**'
+
+jobs:
+  build_and_test:
+    runs-on: ubuntu-22.04
+    env:
+      AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
+      AWS_REGION: ap-northeast-1
+      ECR_REPOSITORY_NAME: ecs-handson-frontend-repo
+      ASSUME_ROLE: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/ecs-handson-githubactions
+      SYSDIG_SECURE_ENDPOINT: "https://us2.app.sysdig.com"
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+    - uses: actions/checkout@v4
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        role-to-assume: ${{ env.ASSUME_ROLE }}
+        aws-region: ${{ env.AWS_REGION }}
+
+    # ECRへログイン
+    - name: Login to Amazon ECR
+      id: login-ecr
+      uses: aws-actions/amazon-ecr-login@v2
+
+    - name: Setup cache
+      uses: actions/cache@v4
+      with:
+        path: cache
+        key: ${{ runner.os }}-cache-${{ hashFiles('**/sysdig-cli-scanner', '**/latest_version.txt', '**/db/main.db.meta.json', '**/scanner-cache/inlineScannerCache.db') }}
+        restore-keys: ${{ runner.os }}-cache-
+
+    - name: Download sysdig-cli-scanner if needed
+      run:  |
+        curl -sLO https://download.sysdig.com/scanning/sysdig-cli-scanner/latest_version.txt
+        mkdir -p ${GITHUB_WORKSPACE}/cache/db/
+        if [ ! -f ${GITHUB_WORKSPACE}/cache/latest_version.txt ] || [ $(cat ./latest_version.txt) != $(cat ${GITHUB_WORKSPACE}/cache/latest_version.txt) ]; then
+          cp ./latest_version.txt ${GITHUB_WORKSPACE}/cache/latest_version.txt
+          curl -sL -o ${GITHUB_WORKSPACE}/cache/sysdig-cli-scanner "https://download.sysdig.com/scanning/bin/sysdig-cli-scanner/$(cat ${GITHUB_WORKSPACE}/cache/latest_version.txt)/linux/amd64/sysdig-cli-scanner"
+          chmod +x ${GITHUB_WORKSPACE}/cache/sysdig-cli-scanner
+        else
+          echo "sysdig-cli-scanner latest version already downloaded"
+        fi
+    - name: Scan the image using sysdig-cli-scanner
+      working-directory: ./app/javascript-sample-app
+      env:
+        SECURE_API_TOKEN: ${{ secrets.SYSDIG_SECURE_API_TOKEN }}
+        ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        ECR_REPOSITORY: ${{ env.ECR_REPOSITORY_NAME }}
+        IMAGE_TAG: TEST_${{ github.sha }}
+      run: |
+        docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG -f ./Dockerfile .
+        ${GITHUB_WORKSPACE}/cache/sysdig-cli-scanner \
+          --apiurl ${SYSDIG_SECURE_ENDPOINT} \
+          $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG \
+          --console-log \
+          --policy 20240720-sysdig-handson \
+          --dbpath=${GITHUB_WORKSPACE}/cache/db/ \
+          --cachepath=${GITHUB_WORKSPACE}/cache/scanner-cache/
+
+    # イメージをビルドしてコミットID（ハッシュ）でタグ付け
+    - name: Build, tag, and push image to Amazon ECR
+      working-directory: ./app/javascript-sample-app
+      id: build-image
+      env:
+        ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        ECR_REPOSITORY: ${{ env.ECR_REPOSITORY_NAME }}
+        IMAGE_TAG: TEST_${{ github.sha }}
+      run: |
+        docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG -f ./Dockerfile .
+        docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+        echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
+
+    - name: "ecspressoのインストール"
+      uses: kayac/ecspresso@v2
+      with:
+        version: v2.3.5
+
+    - name: ecspresso verify
+      run: ecspresso verify
+      working-directory: ./app/
+      env:
+        IMAGE_TAG: TEST_${{ github.sha }}
+
+    # pushしたイメージの削除
+    - name: Delete image
+      id: delete-image
+      env:
+        ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        ECR_REPOSITORY: ${{ env.ECR_REPOSITORY_NAME }}
+        IMAGE_TAG: TEST_${{ github.sha }}
+      run: |
+        aws ecr batch-delete-image --repository-name $ECR_REPOSITORY --image-ids imageTag=$IMAGE_TAG
