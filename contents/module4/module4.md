@@ -53,11 +53,11 @@ CI/CD処理には以下のワークフローファイルを使用します。
 1. Sysdig管理画面にログインします。ご用意頂いたメールアドレス宛にSysdig管理画面への招待メールをお送りしていますので、そちらからログインをお願いします
     1. Googleアカウントの場合、シングルサインオンで簡単にログインできます
 2. Sysdig管理画面に入ったら以下のような画面が出るので画面下部の *Get Into Sysdig* ボタンをクリックします
-    1. <img src="../images/module4/sysdig1.jpg" width=100%>
+    1. <img src="../images/module4/sysdig1.jpg" width=70%>
 3. Home画面で以下のように画面下部の自ユーザ名をクリックし、 *Sysdig API Tokens* をクリックします
-    1. <img src="../images/module4/sysdig2.jpg" width=100%>
+    1. <img src="../images/module4/sysdig2.jpg" width=70%>
 4. Sysdig Secure API Tokenの欄の横にあるコピーボタンをクリックして、コピーした値をメモ帳などに控えておきます
-    1. <img src="../images/module4/sysdig3.jpg" width=100%>
+    1. <img src="../images/module4/sysdig3.jpg" width=70%>
 
 ### コンテナCI処理の実行
 
@@ -65,9 +65,9 @@ CI/CD処理には以下のワークフローファイルを使用します。
     1. ご自身のGitHubリポジトリ画面を開きます。以下のようなURLのはずです
         1. https://github.com/＜自身のGitHubID＞/Handson_with_Secure_container_operations
     2. Settingsを選択します
-        1. <img src="../images/module3/github1.jpg" width=100%>
+        1. <img src="../images/module3/github1.jpg" width=80%>
     3. Secrets and variablesの「Actions」を選択します
-        1. <img src="../images/module3/github2.jpg" width=100%>
+        1. <img src="../images/module3/github2.jpg" width=50%>
     4. *New repository secret* ボタンをクリックします
     5. Secretsに以下を登録します
         - Name: SYSDIG_SECURE_API_TOKEN
@@ -92,14 +92,14 @@ CI/CD処理には以下のワークフローファイルを使用します。
         git commit -m "add app workflow"
         git push myrepo develop
 5. ワークフローファイルの追加ができたので実際に動かしてみます。ブラウザ上でdevelopブランチからmainブランチへのプルリクエストを出します
-    1. <img src="../images/module3/github4.jpg" width=100%>
+    1. <img src="../images/module3/github4.jpg" width=80%>
 6. *New pull request* ボタンをクリックします
 7. developブランチからmainブランチへのプルリクエストであることを以下のように指定します
-    1. <img src="../images/module3/github5.jpg" width=100%>
+    1. <img src="../images/module3/github5.jpg" width=80%>
 8. *Create pull request* ボタンをクリックします
 9. mainブランチへのプルリクエストをトリガーにワークフロー処理が動き始めたはずです。
     - またリポジトリ画面上部の *Actions* タブからも実行の様子が確認できます
-        - <img src="../images/module3/github6.jpg" width=100%>
+        - <img src="../images/module3/github6.jpg" width=80%>
 
 
 ### コンテナイメージ脆弱性の確認
@@ -107,9 +107,9 @@ CI/CD処理には以下のワークフローファイルを使用します。
 1. ワークフロー処理は失敗したはずです。失敗した原因はコンテナイメージに脆弱性が含まれているからです
 2. どのような脆弱性があるのかをSysdig管理画面から確認してみます
 3. Sysdig管理画面に戻り、*Vulnerabilities/Pipeline* を選択します
-    1. <img src="../images/module4/sysdig4.jpg" width=100%>
+    1. <img src="../images/module4/sysdig4.jpg" width=60%>
 4. マウスオーバーするとコンテナイメージのタグが確認できるので、先程のCI処理の中でビルドしたコンテナイメージをクリックします（タグはdevelopブランチの最新のコミットIDになっています）
-    1. <img src="../images/module4/sysdig5.jpg" width=100%>
+    1. <img src="../images/module4/sysdig5.jpg" width=60%>
 5. 多くの脆弱性がコンテナイメージに含まれていることを確認できます
 
 ### コンテナイメージ脆弱性の修正
@@ -135,8 +135,8 @@ CI/CD処理には以下のワークフローファイルを使用します。
 2.  mainブランチへのマージをトリガーに再度、ワークフローが起動します
     1.  またリポジトリ画面上部の *Actions* タブからも実行の様子を確認してみましょう
 3.  ALBの画面からALBのDNS名を確認し、確認したDNS名をブラウザに入力しアクセスしてみましょう
-    1. <img src="../images/module4/alb1.jpg" width=100%>
-    2. <img src="../images/module4/alb2.jpg" width=100%>
+    1. <img src="../images/module4/alb1.jpg" width=70%>
+    2. <img src="../images/module4/alb2.jpg" width=70%>
 > [!NOTE]
 > ここで確認したALBのDNS名は後ほどまた使うのでメモしておいてください
 

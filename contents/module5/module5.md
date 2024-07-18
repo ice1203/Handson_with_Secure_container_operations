@@ -13,11 +13,11 @@ ECS FargateでSysdigを使用する場合、以下のような構成となりま
 - 業務アプリケーションコンテナにワークロードエージェントが配置
 - ワークロードエージェントがOrchestration Agentと通信し、検知したセキュリティイベントを送信したり、ポリシーを受信したりする
 
-<img src="../images/module5/sysdigSecure1.webp" width=100%>
+<img src="../images/module5/sysdigSecure1.webp" width=70%>
 
 AWS構成図として表すと以下のような形になります
 
-<img src="../images/module5/sysdigSecure2.webp" width=100%>
+<img src="../images/module5/sysdigSecure2.webp" width=70%>
 
 <a href="https://dev.classmethod.jp/articles/sysdig-secure-ecs-fargate-setting-up-terraform-overview/">Serverless Agentsを利用してECS Fargate環境でSysdig Secureを利用してみた〜Terraform編〜 | DevelopersIOより</a>
 
@@ -124,7 +124,7 @@ Sysdig が検知した結果はSysdig管理画面から確認することがで�
 - https://us2.app.sysdig.com/secure/#/login
 
 1. 管理画面に入ったら、Insights -> Hosts&Container Activity に移動します
-    1. <img src="../images/module5/viewsysdig1.jpg" width=100%>
+    1. <img src="../images/module5/viewsysdig1.jpg" width=50%>
 2. 画面に円が表示されています。赤い円は脅威度がHighのアクティビティがあったことを示しています。円をクリックします
 3. 画面右にSummaryが表示されます。アイテムをクリックすると詳細が表示されます。 
     1. 各イベントをドリルダウンして、以下のような詳細情報を見ることができます。
@@ -135,7 +135,7 @@ Sysdig が検知した結果はSysdig管理画面から確認することがで�
 4. Summaryの横にあるEventsタブを開くと時系列でどのような脅威イベントがおきたかを確認できます
     1. 各イベントをクリックすることで詳細を確認できます。例えばどのプロセス、どのホスト、どのAWSアカウントで発生したのか等を見れます
 5. 画面左のEventsを選択することでも脅威イベントが確認できます。この画面では脅威度やMITRE ATT&CKの各フェーズでのイベントの絞り込みなどができます
-    1. <img src="../images/module5/viewsysdig2.jpg" width=100%>
+    1. <img src="../images/module5/viewsysdig2.jpg" width=80%>
 
 > [!TIP]
 > - 本ハンズオンでは実施しませんが、もちろん脅威が発生した際にメールやSlackなどへの通知も可能です
