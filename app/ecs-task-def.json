@@ -14,7 +14,8 @@
       },
       "memoryReservation": 512,
       "entryPoint": [
-        "/opt/draios/bin/instrument"
+        "/opt/draios/bin/instrument",
+        "/nodejs/bin/node"
       ],
       "name": "main_app",
       "portMappings": [
