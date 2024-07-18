@@ -2,125 +2,145 @@
 
 このモジュールでは以下のことを行います。
 
-- SysdigオーケストレーターをTerraformで実装します
-- Sysdig Workload エージェントをコンテナ イメージに含めます
+- Orchestration AgentをTerraformで実装します
+- Sysdig Workload エージェント用のサイドカーコンテナをタスク定義に含めます
 - 実際にコンテナに対して攻撃をしてみます
 - 攻撃内容をSysdig管理コンソールから確認します
 
+## Sysdig Secureシステム概要
 
+ECS FargateでSysdigを使用する場合、以下のような構成となります。  
+- 業務アプリケーションコンテナにワークロードエージェントが配置
+- ワークロードエージェントがOrchestration Agentと通信し、検知したセキュリティイベントを送信したり、ポリシーを受信したりする
 
-## CI/CD処理の概要
+<img src="../images/module5/sysdigSecure1.webp" width=100%>
 
-CI/CD処理には以下のワークフローファイルを使用します。
+AWS構成図として表すと以下のような形になります
 
-- CI: contents/module4/container-ci.yaml
-- CD: contents/module4/app-cd.yaml
+<img src="../images/module5/sysdigSecure2.webp" width=100%>
 
-- `contents/module4/container-ci.yaml` では以下のような処理を行っています。
-    1. ECRへのログイン
-    2. Sysdig CLIスキャナーのダウンロード
-    3. コンテナイメージのビルドとSysdig CLIスキャナーを使ったコンテナイメージスキャン
-    4. コンテナイメージをECRにpush
-    5. ecspressoをインストールしてECSデプロイするための構成が正しいことを検証
-    6. ECRにpushしたコンテナイメージを削除
-- `contents/module4/app-cd.yaml` では以下のような処理を行っています。
-    1. ECRへのログイン
-    2. コンテナイメージのビルドとECRにpush
-    3. ecspressoをインストールしてECSデプロイするための構成が正しいことを検証
-    4. ecspressoによるECSタスク定義及びECSサービスのデプロイ
+<a href="https://dev.classmethod.jp/articles/sysdig-secure-ecs-fargate-setting-up-terraform-overview/">Serverless Agentsを利用してECS Fargate環境でSysdig Secureを利用してみた〜Terraform編〜 | DevelopersIOより</a>
 
+## Orchestration AgentをTerraformで実装
 
-## GitHub ActionsワークフローにアプリケーションのCI/CDを追加する
+それでは、Orchestration Agentを実装してみましょう
 
-> [!TIP]
-> 実際にプルリクエストをトリガーとしたワークフローを使う場合は、GitHubのブランチ保護ルールを併用することを推奨します。これによってワークフローが成功していないとマージが不可といったことを実現できます
-
-### Sysdig Secure APIトークンの確認
-
-1. Sysdig管理画面にログインします。ご用意頂いたメールアドレス宛にSysdig管理画面への招待メールをお送りしていますので、そちらからログインをお願いします
-    1. Googleアカウントの場合、シングルサインオンで簡単にログインできます
-2. Sysdig管理画面に入ったら以下のような画面が出るので画面下部の *Get Into Sysdig* ボタンをクリックします
-    1. <img src="../images/module4/sysdig1.jpg" width=100%>
-3. Home画面で以下のように画面下部の自ユーザ名をクリックし、 *Sysdig API Tokens* をクリックします
-    1. <img src="../images/module4/sysdig2.jpg" width=100%>
-4. Sysdig Secure API Tokenの欄の横にあるコピーボタンをクリックして、コピーした値をメモ帳などに控えておきます
-    1. <img src="../images/module4/sysdig3.jpg" width=100%>
-
-### コンテナCI処理の実行
-
-1. GitHubリポジトリ側でワークフロー内で使用するsecretsの設定をしておきます
-    1. ご自身のGitHubリポジトリ画面を開きます。以下のようなURLのはずです
-        1. https://github.com/＜自身のGitHubID＞/Handson_with_Secure_container_operations
-    2. Settingsを選択します
-        1. <img src="../images/module3/github1.jpg" width=100%>
-    3. Secrets and variablesの「Actions」を選択します
-        1. <img src="../images/module3/github2.jpg" width=100%>
-    4. *New repository secret* ボタンをクリックします
-    5. Secretsに以下を登録します
-        - Name: SYSDIG_SECURE_API_TOKEN
-        - Secret: Sysdig管理画面で確認したSysdig Secure APIトークンの値
-2. GitHub ActionsのワークフローとしてGitHubに認識させるためにはリポジトリ内の所定のディレクトリに置く必要があります
-    1. `container-ci.yaml`と`app-cd.yaml`を `.github/workflows` ディレクトリに格納しましょう
-        1. ```
-            # developブランチであることを確認
-            git branch
-            # ワークフローファイルの格納
-            cd Handson_with_Secure_container_operations/contents/module4/
-            git mv container-ci.yaml ../../.github/workflows/
-            git mv app-cd.yaml ../../.github/workflows/
-3. またこのワークフローでは `app` ディレクトリ配下のファイルの変更を検知してワークフローが起動するような設定になっています。そのため `terraform` ディレクトリ配下のファイルを編集します
-    1. `app/javascript-sample-app/index.js`を開き、21行目のコメントアウトされている箇所に適当な文字を記載してください
-        1. ```
-            // config 適当な文字列
+1. `.github/workflows/tf-plan-apply.yaml` の27行目付近の以下の行のコメントアウトを外します。※これはSysdig Orchestration Agent実装時に必要となるAgent Access Keyを変数に格納しています
+    1. ```
+        #TF_VAR_sysdig_agent_access_key: ${{ secrets.SYSDIG_AGENT_ACCESS_KEY }}
+2. `terraform/environments/dev/main.tf` の以下の行のコメントアウトを外します。この部分でOrchestration Agentを定義しています
+    1. ```
+        #module "fargate-orchestrator-agent" {
+        #  source  = "sysdiglabs/fargate-orchestrator-agent/aws"
+        #  version = "0.4.1"
+        #
+        #  vpc_id  = module.vpc.vpc_id
+        #  subnets = module.vpc.private_subnets
+        #
+        #  access_key = var.sysdig_agent_access_key
+        #
+        #  collector_host = "ingest-us2.app.sysdig.com"
+        #  collector_port = "6443"
+        #
+        #  name        = "sysdig-orchestrator"
+        #  agent_image = "quay.io/sysdig/orchestrator-agent:latest"
+        #
+        #  # True if the VPC uses an InternetGateway, false otherwise
+        #  assign_public_ip = false
+        #
+        #  tags = {
+        #    description = "Sysdig Serverless Agent Orchestrator"
+        #  }
+        #}
+3. `terraform/environments/dev/variables.tf` の以下の行のコメントアウトを外します。環境変数で定義されたAgent Access Keyをこの変数で受け取ります
+    1. ```
+        #variable "sysdig_agent_access_key" {
+        #  type        = string
+        #  description = "Sysdig agent access key"
+        #  sensitive   = true
+        #
+        #}
 4. 編集が完了したら、ファイルをGitHubリポジトリにpushします
     1. ```
         # コミットとpush
         git add --all
-        git commit -m "add app workflow"
+        git commit -m "add Orchestration Agent"
         git push myrepo develop
-5. ワークフローファイルの追加ができたので実際に動かしてみます。ブラウザ上でdevelopブランチからmainブランチへのプルリクエストを出します
-    1. <img src="../images/module3/github4.jpg" width=100%>
-6. *New pull request* ボタンをクリックします
-7. developブランチからmainブランチへのプルリクエストであることを以下のように指定します
-    1. <img src="../images/module3/github5.jpg" width=100%>
-8. *Create pull request* ボタンをクリックします
-9. mainブランチへのプルリクエストをトリガーにワークフロー処理が動き始めたはずです。
-    - またリポジトリ画面上部の *Actions* タブからも実行の様子が確認できます
-        - <img src="../images/module3/github6.jpg" width=100%>
+5. [module4](../module4/module4.md) の手順に従いブラウザ上でdevelopブランチからmainブランチへのプルリクエストを出し、mainブランチへのマージをしてください
+    1. ※ `Terraform plan` 結果を念の為、確認するようにしましょう
+6. mainブランチへのマージができたらOrchestration Agentのデプロイは完了です
 
+## Sysdig Workload エージェントのデプロイ
 
-### コンテナイメージ脆弱性の確認
+続いて、アプリケーションにSysdig Workload エージェントのデプロイします  
 
-1. ワークフロー処理は失敗したはずです。失敗した原因はコンテナイメージに脆弱性が含まれているからです
-2. どのような脆弱性があるのかをSysdig管理画面から確認してみます
-3. Sysdig管理画面に戻り、*Vulnerabilities/Pipeline* を選択します
-    1. <img src="../images/module4/sysdig4.jpg" width=100%>
-4. マウスオーバーするとコンテナイメージのタグが確認できるので、先程のCI処理の中でビルドしたコンテナイメージをクリックします（タグはdevelopブランチの最新のコミットIDになっています）
-    1. <img src="../images/module4/sysdig5.jpg" width=100%>
-5. 多くの脆弱性がコンテナイメージに含まれていることを確認できます
-
-### コンテナイメージ脆弱性の修正
-
-1. コンテナイメージの脆弱性をDockerコンテナのベースイメージを変更することで修正します
-2. 以下のファイルをコピーし、再度リポジトリにpushします
-    1. `Dockerfile`を `.github/workflows` ディレクトリに格納しましょう
+1. Sysdig Workload エージェントの[実装方法はいくつかあります](https://docs.sysdig.com/en/docs/installation/sysdig-secure/install-agent-components/ecs-on-fargate/serverless-agents/)
+2. 今回はタスク定義をecspressoで管理しているので手動でタスク定義を書き換えましょう。本ハンズオンでは事前にタスク定義を用意してありますので差し替えるだけです
+    1. `ecs-task-def.json`を 差し替えましょう
         1. ```
-            # Dockerfileの格納
-            cd Handson_with_Secure_container_operations/contents/module4/
-            git mv Dockerfile ../../app/javascript-sample-app
-            git add --all
-            git commit -m "update dockerfile"
-            git push myrepo develop
-3. 既にdevelopブランチでプルリクエスト作成済であるところにpushをしたのでプルリクエストが更新されます。更新をトリガーにワークフローが起動します
-4. ワークフローが完了したら、再度 *コンテナイメージ脆弱性の確認* と同様の手順で脆弱性の数がどの程度変わったか確認してみましょう
+            # developブランチであることを確認
+            git branch
+            # 置き換える前に変更箇所を確認してみましょう
+            cd Handson_with_Secure_container_operations/contents/module5/
+            diff ecs-task-def.json ../../app/ecs-task-def.json
+            # タスク定義ファイルの格納
+            git mv ecs-task-def.json ../../app/ecs-task-def.json
+3. また、タスク定義の他にアプリケーション用のDockerfileにも一部変更が必要です。具体的にはENTRYPOINTを変更し、Sysdigサイドカーコンテナと共有している実行ファイルから、アプリケーションを呼び出すように修正します
+    1. `Dockerfile` の以下の行のコメントアウトを外します。
+        1. ```
+           # ENTRYPOINT [ "/opt/draios/bin/instrument","/nodejs/bin/node" ]
+> [!TIP]
+> - Sysdigサイドカーコンテナとのファイル共有は`ecs-task-def.json`の `volumesFrom` の箇所で実現されています。
+> - これにより同タスク内の別コンテナのボリュームをマウントできます
+4. 編集が完了したら、ファイルをGitHubリポジトリにpushします
+    1. ```
+        # コミットとpush
+        git add --all
+        git commit -m "add workload agent"
+        git push myrepo develop
+5. [module4](../module4/module4.md) の手順に従いブラウザ上でdevelopブランチからmainブランチへのプルリクエストを出し、mainブランチへのマージをしてください
+    1. ※ `Terraform plan` 結果を念の為、確認するようにしましょう
+6. mainブランチへのマージができたらWorkload Agentのデプロイは完了です
 
-### AWS環境へのデプロイ
+## 実際に攻撃をしてみる
 
-1. プルリクエストをトリガーとした、CIのワークフロー処理が正常に完了したら、次はmainブランチにpushをすることで実際にAWS環境へのデプロイを行います
-    1.  プルリクエストの画面に戻り、 *Merge pull request* ボタンをクリックします
-        1.  <img src="../images/module3/github7.jpg" width=100%>
-2.  mainブランチへのマージをトリガーに再度、ワークフローが起動します
-    1.  またリポジトリ画面上部の *Actions* タブからも実行の様子を確認してみましょう
-3.  ALBの画面からALBのDNS名を確認し、確認したDNS名をブラウザに入力しアクセスしてみましょう
+上記の手順を実行したことでコンテナへの攻撃を検知できるようになりました。  
+実際に攻撃を行い、どういった形で攻撃の形跡が見れるのかを確認しましょう  
+
+攻撃は簡単に行えます。[module4](../module4/module4.md)で確認したALBのDNS名を使い以下のURLを実行してみてください。
+
+http://＜ALBのDNS名＞/outgoing-http-call
+
+
+- 上記のURLを実行したことで、 *ECSタスクから既知の暗号通貨マイニングプールのアドレスへhttps通信を行います*  
+- 一般的なシステムはそもそもマイニングプールに接続すること自体がないため、接続しているということは外部からマルウェアが混入され計算リソースを使われているというケースが考えられます。  
+- そのため、Sysdigでは既知の暗号通貨マイニングプールのアドレスへの通信を脅威として検知します。
+- ※なお、今回のハンズオン環境ではネットワークACLを使って対象のマイニングプールCIDRへのアウトバウンド通信を拒否しているので実際に接続はしません
+
+## 攻撃内容をSysdig管理画面から確認する
+
+Sysdig が検知した結果はSysdig管理画面から確認することができます。まずはSysdig管理画面に入りましょう
+
+- https://us2.app.sysdig.com/secure/#/login
+
+1. 管理画面に入ったら、Insights -> Hosts&Container Activity に移動します
+    1. <img src="../images/module5/viewsysdig1.jpg" width=100%>
+2. 画面に円が表示されています。赤い円は脅威度がHighのアクティビティがあったことを示しています。円をクリックします
+3. 画面右にSummaryが表示されます。アイテムをクリックすると詳細が表示されます。 
+    1. 各イベントをドリルダウンして、以下のような詳細情報を見ることができます。
+        - 影響を受けたコンテナのIDおよび名前
+        - 影響を受けたコンテナがデプロイされたイメージ
+        - 発動したFalcoルール
+        - 追加・変更されたファイル
+4. Summaryの横にあるEventsタブを開くと時系列でどのような脅威イベントがおきたかを確認できます
+    1. 各イベントをクリックすることで詳細を確認できます。例えばどのプロセス、どのホスト、どのAWSアカウントで発生したのか等を見れます
+5. 画面左のEventsを選択することでも脅威イベントが確認できます。この画面では脅威度やMITRE ATT&CKの各フェーズでのイベントの絞り込みなどができます
+    1. <img src="../images/module5/viewsysdig2.jpg" width=100%>
+
+> [!TIP]
+> - 本ハンズオンでは実施しませんが、もちろん脅威が発生した際にメールやSlackなどへの通知も可能です
+> - またEvent Forwardingという機能をつかうことで脅威イベントをSQS等にキューイング可能です。
+> - これを利用することで、例えば高い脅威度のイベントが発生した際にECSタスクを自動で止めるといった処理も実装可能です
+
 
 [Next: Sysdigによるランタイムモニタリングの導入](../module5/module5.md)

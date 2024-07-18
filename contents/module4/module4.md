@@ -135,5 +135,11 @@ CI/CD処理には以下のワークフローファイルを使用します。
 2.  mainブランチへのマージをトリガーに再度、ワークフローが起動します
     1.  またリポジトリ画面上部の *Actions* タブからも実行の様子を確認してみましょう
 3.  ALBの画面からALBのDNS名を確認し、確認したDNS名をブラウザに入力しアクセスしてみましょう
+    1. <img src="../images/module4/alb1.jpg" width=100%>
+    2. <img src="../images/module4/alb2.jpg" width=100%>
+> [!NOTE]
+> ここで確認したALBのDNS名は後ほどまた使うのでメモしておいてください
+
+
 
 [Next: Sysdigによるランタイムモニタリングの導入](../module5/module5.md)
