@@ -24,7 +24,8 @@
       ],
       "entryPoint": [
         "/opt/draios/bin/instrument",
-        "/nodejs/bin/node"
+        "/nodejs/bin/node",
+        "index.js"
       ],
       "environment": [
         {
