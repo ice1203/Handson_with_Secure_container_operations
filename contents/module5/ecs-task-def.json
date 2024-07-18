@@ -3,7 +3,7 @@
     {
       "cpu": 256,
       "essential": true,
-      "image": "{{ tfstate `module.frontend-ecr.aws_ecr_repository.myecr.repository_url` }}:{{ must_env `IMAGE_TAG` }}",
+      "image": "sysdiglabs/security-playground",
       "logConfiguration": {
         "logDriver": "awslogs",
         "options": {
@@ -16,15 +16,29 @@
       "name": "main_app",
       "portMappings": [
         {
-          "name": "main_app-8080-tcp",
-          "containerPort": 8080,
-          "hostPort": 8080,
-          "protocol": "tcp"
+            "name": "securitiy-playground-8080-tcp",
+            "containerPort": 8080,
+            "hostPort": 8080,
+            "protocol": "tcp",
+            "appProtocol": "http"
         }
       ],
       "entryPoint": [
         "/opt/draios/bin/instrument",
-        "/nodejs/bin/node"
+        "gunicorn",
+        "-b",
+        ":8080",
+        "--workers",
+        "2",
+        "--threads",
+        "4",
+        "--worker-class",
+        "gthread",
+        "--access-logfile",
+        "-",
+        "--error-logfile",
+        "-",
+        "app:app"
       ],
       "environment": [
         {
