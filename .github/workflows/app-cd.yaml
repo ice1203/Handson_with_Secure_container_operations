@@ -56,9 +56,11 @@ jobs:
       working-directory: ./app/
       env:
         IMAGE_TAG: ${{ github.sha }}
+        SYSDIG_AGENT_ACCESS_KEY: ${{ env.SYSDIG_AGENT_ACCESS_KEY }}
 
     - name: "ecspressoを使ってECSへのデプロイを実行"
       run: ecspresso deploy --config ecspresso.yml --tasks=1
       working-directory: ./app/
       env:
         IMAGE_TAG: ${{ github.sha }}
+        SYSDIG_AGENT_ACCESS_KEY: ${{ env.SYSDIG_AGENT_ACCESS_KEY }}
