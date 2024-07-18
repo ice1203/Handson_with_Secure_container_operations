@@ -13,7 +13,7 @@
   "desiredCount": 1,
   "enableECSManagedTags": true,
   "enableExecuteCommand": true,
-  "healthCheckGracePeriodSeconds": 0,
+  "healthCheckGracePeriodSeconds": 15,
   "launchType": "FARGATE",
   "loadBalancers": [
     {
