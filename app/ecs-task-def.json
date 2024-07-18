@@ -13,24 +13,99 @@
         }
       },
       "memoryReservation": 512,
+      "entryPoint": [
+        "/opt/draios/bin/instrument"
+      ],
       "name": "main_app",
       "portMappings": [
         {
-          "appProtocol": "",
           "containerPort": 8080,
           "hostPort": 8080,
           "protocol": "tcp"
         }
+      ],
+      "environment": [
+        {
+            "name": "SYSDIG_ORCHESTRATOR",
+            "value": "{{ tfstate `module.fargate-orchestrator-agent.aws_lb.orchestrator_agent.dns_name` }}"
+        },
+        {
+            "name": "SYSDIG_ORCHESTRATOR_PORT",
+            "value": "{{ tfstate `module.fargate-orchestrator-agent.aws_lb_listener.orchestrator_agent.port` }}"
+        },
+        {
+            "name": "SYSDIG_COLLECTOR_PORT",
+            "value": ""
+        },
+        {
+            "name": "SYSDIG_COLLECTOR",
+            "value": ""
+        },
+        {
+            "name": "SYSDIG_SIDECAR",
+            "value": ""
+        },
+        {
+            "name": "SYSDIG_LOGGING",
+            "value": ""
+        },
+        {
+            "name": "SYSDIG_ACCESS_KEY",
+            "value": "{{ must_env `SYSDIG_AGENT_ACCESS_KEY` }}"
+        }
+      ],
+      "volumesFrom": [
+        {
+           "sourceContainer": "sysdigInstrumentation",
+           "readOnly": true
+        }
+      ],
+      "linuxParameters": {
+        "capabilities": {
+          "add": ["SYS_PTRACE"]
+        }
+      }
+    },
+    {
+      "name": "SysdigInstrumentation",
+      "image": "quay.io/sysdig/workload-agent:latest",
+      "cpu": 0,
+      "portMappings": [],
+      "essential": true,
+      "entryPoint": [
+          "/opt/draios/bin/logwriter"
+      ],
+      "environment": [
+        {
+            "name": "SYSDIG_ORCHESTRATOR",
+            "value": "{{ tfstate `module.fargate-orchestrator-agent.aws_lb.orchestrator_agent.dns_name` }}"
+        },
+        {
+            "name": "SYSDIG_ORCHESTRATOR_PORT",
+            "value": "{{ tfstate `module.fargate-orchestrator-agent.aws_lb_listener.orchestrator_agent.port` }}"
+        },
+        {
+            "name": "SYSDIG_PRIORITY",
+            "value": "availability"
+        },
+        {
+            "name": "SYSDIG_SIDECAR",
+            "value": "auto"
+        },
+        {
+          "name": "SYSDIG_ACCESS_KEY",
+          "value": "{{ must_env `SYSDIG_AGENT_ACCESS_KEY` }}"
+        }
       ]
     }
   ],
+  "pidMode": "task",
   "cpu": "256",
   "executionRoleArn": "{{ tfstate `module.frontend-ecs.aws_iam_role.ecs_task_execution_role.arn` }}",
   "family": "ecs-handson-samplejs",
   "ipcMode": "",
   "memory": "512",
   "networkMode": "awsvpc",
-  "pidMode": "",
   "requiresCompatibilities": [
     "FARGATE"
   ],
