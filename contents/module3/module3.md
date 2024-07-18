@@ -290,7 +290,7 @@ CI処理には以下のワークフローファイルを使用します。
     2. Settingsを選択します
         1. <img src="../images/module3/github1.jpg" width=100%>
     3. Secrets and variablesの「Actions」を選択します
-        1. <img src="../images/module3/github2.jpg" width=100%>
+        1. <img src="../images/module3/github2.jpg" width=50%>
     4. *New repository secret* ボタンをクリックします
     5. Secretsに以下を登録します
         - Name: AWS_ACCOUNT_ID
@@ -326,12 +326,12 @@ CI処理には以下のワークフローファイルを使用します。
 8. *Create pull request* ボタンをクリックします
 9. mainブランチへのプルリクエストをトリガーにワークフロー処理が動き始めたはずです。
     - しばらく待てばプルリクエストのコメントとして各ツールのチェック状況のサマリが表示されます。
-        - <img src="../images/module3/github8.jpg" width=100%>
+        - <img src="../images/module3/github8.jpg" width=80%>
     - またリポジトリ画面上部の *Actions* タブからも実行の様子が確認できます
-        - <img src="../images/module3/github6.jpg" width=100%>
+        - <img src="../images/module3/github6.jpg" width=80%>
 10. プルリクエストをトリガーとした、CIのワークフロー処理が正常に完了したら、次はmainブランチにpushをすることで実際にAWS環境へのデプロイを行います
     1.  プルリクエストの画面に戻り、 *Merge pull request* ボタンをクリックします
-        1.  <img src="../images/module3/github7.jpg" width=100%>
+        1.  <img src="../images/module3/github7.jpg" width=80%>
 11. mainブランチへのマージをトリガーに再度、ワークフローが起動します
     1.  またリポジトリ画面上部の *Actions* タブからも実行の様子を確認してみましょう
 
