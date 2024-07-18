@@ -25,7 +25,7 @@ https://ap-northeast-1.console.aws.amazon.com/cloud9/home?region=ap-northeast-1
 10. 以下のURLをクリックしてCloud9のEC2インスタンスを選択します
     1.  https://console.aws.amazon.com/ec2/v2/home?#Instances:tag:Name=aws-cloud9-ecs-handson;sort=desc:launchTime
 11. インスタンスを選択してから右クリックをし、*セキュリティ/IAMロールの変更* を選択します。
-    1.  <img src="../images/module2/Cloud9-3.jpg" width=100%>
+    1.  <img src="../images/module2/Cloud9-3.jpg" width=80%>
 12. IAMロールのドロップダウンから *ecs-handson-cloud9* を選択し、IAMロールの更新を選択します。
 
 ## Cloud9のセットアップ
@@ -108,8 +108,7 @@ git clone https://github.com/ice1203/Handson_with_Secure_container_operations.gi
 
 - `terraform/environments/dev/main.tf`を見てみます。Terraformが作るAWSリソースは以下の通りです。
     - ECSサービスやECSタスク定義はTerraformの中では作成されない点を覚えておいてください。
-
-<img src="../images/module2/arch_by_terraform-1.png" width=100%>
+        - <img src="../images/module2/arch_by_terraform-1.png" width=80%>
 
 
 ### github_ownerの修正
