@@ -24,6 +24,7 @@ env:
   PLAN_ROLE_ARN: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/ecs-handson-githubactions
   APPLY_ROLE_ARN: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/ecs-handson-githubactions
   #TF_VAR_allowed_cidr_blocks: ${{ secrets.TF_VAR_allowed_cidr_blocks }}
+  TF_VAR_sysdig_agent_access_key: ${{ secrets.TF_VAR_SYSDIG_AGENT_ACCESS_KEY }}
 
 permissions:
   id-token: write
