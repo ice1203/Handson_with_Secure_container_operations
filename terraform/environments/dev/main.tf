@@ -4,12 +4,20 @@ locals {
   network_acls = {
     default_outbound = [
       {
-        rule_number = 110
+        rule_number = 100
         rule_action = "deny"
-        from_port   = 1
-        to_port     = 65535
-        protocol    = "tcp"
+        from_port   = 0
+        to_port     = 0
+        protocol    = "-1"
         cidr_block  = "49.12.80.0/24"
+      },
+      {
+        rule_number = 110
+        rule_action = "allow"
+        from_port   = 0
+        to_port     = 0
+        protocol    = "-1"
+        cidr_block  = "0.0.0.0/0"
       },
     ]
   }
