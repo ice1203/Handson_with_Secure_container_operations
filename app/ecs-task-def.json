@@ -100,11 +100,11 @@
     }
   ],
   "pidMode": "task",
-  "cpu": "256",
+  "cpu": "512",
   "executionRoleArn": "{{ tfstate `module.frontend-ecs.aws_iam_role.ecs_task_execution_role.arn` }}",
   "family": "ecs-handson-samplejs",
   "ipcMode": "",
-  "memory": "512",
+  "memory": "1024",
   "networkMode": "awsvpc",
   "requiresCompatibilities": [
     "FARGATE"
