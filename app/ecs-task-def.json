@@ -67,7 +67,7 @@
       }
     },
     {
-      "name": "SysdigInstrumentation",
+      "name": "sysdigInstrumentation",
       "image": "quay.io/sysdig/workload-agent:latest",
       "cpu": 0,
       "portMappings": [],
