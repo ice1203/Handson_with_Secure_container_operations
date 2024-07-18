@@ -22,6 +22,3 @@ USER nonroot
 
 # 作業ディレクトリを設定
 WORKDIR /usr/src/app
-
-# アプリケーションを実行
-CMD ["index.js"]
