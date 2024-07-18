@@ -11,9 +11,3 @@ variable "sysdig_agent_access_key" {
   sensitive   = true
 
 }
-#variable "secure_api_token" {
-#  type        = string
-#  description = "Sysdig Secure API token"
-#  sensitive = true
-#
-#}

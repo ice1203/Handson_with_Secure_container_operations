@@ -21,7 +21,6 @@ jobs:
       ECR_REPOSITORY_NAME: ecs-handson-frontend-repo
       ASSUME_ROLE: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/ecs-handson-githubactions
       SYSDIG_SECURE_ENDPOINT: "https://us2.app.sysdig.com"
-      SYSDIG_AGENT_ACCESS_KEY: ${{ secrets.SYSDIG_AGENT_ACCESS_KEY }}
     permissions:
       id-token: write
       contents: read
