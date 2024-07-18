@@ -22,3 +22,5 @@ USER nonroot
 
 # 作業ディレクトリを設定
 WORKDIR /usr/src/app
+ENTRYPOINT [ "/opt/draios/bin/instrument","/nodejs/bin/node" ]
+CMD [ "index.js" ]
