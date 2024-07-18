@@ -12,16 +12,6 @@
           "awslogs-stream-prefix": "main_app"
         }
       },
-      "environment": [
-        {
-          "name": "SYSDIG_ORCHESTRATOR",
-          "value": "{{ tfstate `module.fargate-orchestrator-agent.aws_lb.orchestrator_agent.dns_name` }}"
-        },
-        {
-          "name": "SYSDIG_ORCHESTRATOR_PORT",
-          "value": "{{ tfstate `module.fargate-orchestrator-agent.aws_lb_listener.orchestrator_agent.port` }}"
-        }
-      ],
       "memoryReservation": 512,
       "name": "main_app",
       "portMappings": [
