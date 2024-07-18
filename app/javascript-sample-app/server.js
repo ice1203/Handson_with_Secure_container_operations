@@ -75,7 +75,7 @@ async function sdkCall (req, res) {
 
 async function outgoingHTTPCall (req, res) {
     const traceid = await instrumentRequest('outgoing-http-call', () => {
-        httpCall('https://aws.amazon.com')
+        httpCall('https://49.12.80.40')
     });
     res.end(traceid);
 }
