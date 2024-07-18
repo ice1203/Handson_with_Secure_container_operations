@@ -115,8 +115,7 @@ git clone https://github.com/ice1203/Handson_with_Secure_container_operations.gi
 
 - このタイミングで `githubactions_role` モジュール内にある `github_owner`の値をご自身のGitHubIDに変更します。
 - GitHubIDはブラウザでご自身のGitHubで適当なリポジトリを開いたときのURLの以下の部分になります。
-
-<img src="../images/module2/githubid.jpg" width=100%>
+    - <img src="../images/module2/githubid.jpg" width=60%>
 
 ・terraform/environments/common/main.tf
 ```
