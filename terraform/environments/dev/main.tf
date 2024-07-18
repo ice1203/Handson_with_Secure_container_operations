@@ -1,6 +1,18 @@
 locals {
   sys_name = "ecs"
   env_name = "handson"
+  network_acls = {
+    default_outbound = [
+      {
+        rule_number = 110
+        rule_action = "deny"
+        from_port   = 1
+        to_port     = 65535
+        protocol    = "tcp"
+        cidr_block  = "49.12.80.0/24"
+      },
+    ]
+  }
 }
 
 module "vpc" {
@@ -14,16 +26,18 @@ module "vpc" {
   private_subnets = ["172.18.0.0/24", "172.18.1.0/24", "172.18.2.0/24"]
   public_subnets  = ["172.18.128.0/24", "172.18.129.0/24", "172.18.130.0/24"]
 
-  enable_nat_gateway   = true
-  single_nat_gateway   = true
-  enable_vpn_gateway   = false
-  enable_dns_hostnames = true
-
+  enable_nat_gateway                   = true
+  single_nat_gateway                   = true
+  enable_vpn_gateway                   = false
+  enable_dns_hostnames                 = true
+  manage_default_network_acl           = true
   enable_flow_log                      = false
   flow_log_max_aggregation_interval    = 60
   create_flow_log_cloudwatch_iam_role  = true
   create_flow_log_cloudwatch_log_group = true
+  public_dedicated_network_acl         = true
 
+  public_outbound_acl_rules = local.network_acls.default_outbound
   tags = {
     Environment = local.env_name
   }
