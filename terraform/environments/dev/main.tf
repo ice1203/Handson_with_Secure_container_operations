@@ -1,26 +1,26 @@
 locals {
   sys_name = "ecs"
   env_name = "handson"
-  #network_acls = {
-  #  default_outbound = [
-  #    {
-  #      rule_number = 100
-  #      rule_action = "deny"
-  #      from_port   = 0
-  #      to_port     = 0
-  #      protocol    = "-1"
-  #      cidr_block  = "49.12.80.0/24"
-  #    },
-  #    {
-  #      rule_number = 110
-  #      rule_action = "allow"
-  #      from_port   = 0
-  #      to_port     = 0
-  #      protocol    = "-1"
-  #      cidr_block  = "0.0.0.0/0"
-  #    },
-  #  ]
-  #}
+  network_acls = {
+    default_outbound = [
+      {
+        rule_number = 100
+        rule_action = "deny"
+        from_port   = 0
+        to_port     = 0
+        protocol    = "-1"
+        cidr_block  = "49.12.80.0/24"
+      },
+      {
+        rule_number = 110
+        rule_action = "allow"
+        from_port   = 0
+        to_port     = 0
+        protocol    = "-1"
+        cidr_block  = "0.0.0.0/0"
+      },
+    ]
+  }
 }
 
 module "vpc" {
@@ -43,9 +43,9 @@ module "vpc" {
   flow_log_max_aggregation_interval    = 60
   create_flow_log_cloudwatch_iam_role  = true
   create_flow_log_cloudwatch_log_group = true
-  #public_dedicated_network_acl         = true
+  public_dedicated_network_acl         = true
 
-  #public_outbound_acl_rules = local.network_acls.default_outbound
+  public_outbound_acl_rules = local.network_acls.default_outbound
   tags = {
     Environment = local.env_name
   }
