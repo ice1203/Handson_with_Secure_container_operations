@@ -22,11 +22,6 @@
           "protocol": "tcp"
         }
       ],
-      "entryPoint": [
-        "/opt/draios/bin/instrument",
-        "/nodejs/bin/node",
-        "index.js"
-      ],
       "environment": [
         {
             "name": "SYSDIG_SIDECAR",
