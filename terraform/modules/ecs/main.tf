@@ -74,7 +74,8 @@ resource "aws_iam_policy" "awsdistro_policy" {
                 "cloudwatch:PutMetricData",
                 "ec2:DescribeVolumes",
                 "ec2:DescribeTags",
-                "ssm:GetParameters"
+                "ssm:GetParameters",
+                "s3:ListAllMyBuckets"
             ],
             "Resource": "*"
         }
