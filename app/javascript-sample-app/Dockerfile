@@ -17,7 +17,8 @@ COPY . .
 FROM gcr.io/distroless/nodejs22-debian12
 
 # ビルドステージからアプリケーションのディレクトリをコピー
-COPY --from=builder /usr/src/app /usr/src/app
+COPY --chown=nonroot:nonroot --from=builder /usr/src/app /usr/src/app
+USER nonroot
 
 # 作業ディレクトリを設定
 WORKDIR /usr/src/app

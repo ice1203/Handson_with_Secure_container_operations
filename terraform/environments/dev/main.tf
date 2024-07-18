@@ -28,6 +28,29 @@ module "vpc" {
     Environment = local.env_name
   }
 }
+
+module "fargate-orchestrator-agent" {
+  source  = "sysdiglabs/fargate-orchestrator-agent/aws"
+  version = "0.4.1"
+
+  vpc_id  = module.vpc.vpc_id
+  subnets = module.vpc.private_subnets
+
+  access_key = var.sysdig_agent_access_key
+
+  collector_host = "ingest-us2.app.sysdig.com"
+  collector_port = "6443"
+
+  name        = "sysdig-orchestrator"
+  agent_image = "quay.io/sysdig/orchestrator-agent:latest"
+
+  # True if the VPC uses an InternetGateway, false otherwise
+  assign_public_ip = false
+
+  tags = {
+    description = "Sysdig Serverless Agent Orchestrator"
+  }
+}
 module "frontend-ecr" {
   source = "../../modules/ecr"
 
