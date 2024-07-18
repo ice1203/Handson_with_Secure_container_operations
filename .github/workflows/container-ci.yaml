@@ -72,6 +72,15 @@ jobs:
           --dbpath=${GITHUB_WORKSPACE}/cache/db/ \
           --cachepath=${GITHUB_WORKSPACE}/cache/scanner-cache/
 
+    - name: Trivy Scan
+      id: trivy-scan
+      uses: aquasecurity/trivy-action@0.24.0
+      with:
+        scan-type: config
+        exit-code: '1'
+        severity: 'CRITICAL,HIGH'
+        skip-dirs: 'terraform,contents'
+        output: 'trivy-table'
     # イメージをビルドしてコミットID（ハッシュ）でタグ付け
     - name: Build, tag, and push image to Amazon ECR
       working-directory: ./app/javascript-sample-app
