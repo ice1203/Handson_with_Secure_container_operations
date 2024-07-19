@@ -1,12 +1,12 @@
-# 開発環境のセットアップ
+# IaC(Terraform)を使ったAWS環境のデプロイ
 
-## AWS アカウントへのログイン
+## Cloud9の初期セットアップ
 
-AWS アカウント情報は以下のスプレッドシートにて配布しています。
+### AWS アカウントへのログイン
 
-https://docs.google.com/spreadsheets/d/1PH3YkIAy3QfTH3bFcVEdG7FAWdhCrtppQQFnlIrhWf8/edit?usp=sharing
 
-## Cloud9環境の作成
+
+### Cloud9環境の作成
 AWSマネージメントコンソールにログインしたら、以下のURLをクリックしてCloud9を作成してください。
 
 https://ap-northeast-1.console.aws.amazon.com/cloud9/home?region=ap-northeast-1
@@ -28,7 +28,7 @@ https://ap-northeast-1.console.aws.amazon.com/cloud9/home?region=ap-northeast-1
     1.  <img src="../images/module2/Cloud9-3.jpg" width=80%>
 12. IAMロールのドロップダウンから *ecs-handson-cloud9* を選択し、IAMロールの更新を選択します。
 
-## Cloud9のセットアップ
+### Cloud9のセットアップ
 
 1. Cloud9のターミナル画面に戻ります
 2. Cloud9の設定画面を開き、*AWS Settings/Credentials/AWS Managed temporary credentials* を無効（赤い☓マーク）にします
@@ -153,7 +153,7 @@ terraform plan
 terraform apply
 ```
 
-## 自身のGitHubリポジトリにpushする
+### 自身のGitHubリポジトリにpushする
 
 作成できたら、ご自身のGitHubリポジトリにpushしましょう
 
