@@ -116,7 +116,7 @@ CI/CD処理には以下のワークフローファイルを使用します。
 
 1. コンテナイメージの脆弱性をDockerコンテナのベースイメージを変更することで修正します
 2. 以下のファイルをコピーし、再度リポジトリにpushします
-    1. `Dockerfile`を `.github/workflows` ディレクトリに格納しましょう
+    1. `Dockerfile`を `.app/javascript-sample-app` ディレクトリに格納しましょう
         1. ```
             # Dockerfileの格納
             cd Handson_with_Secure_container_operations/contents/module4/

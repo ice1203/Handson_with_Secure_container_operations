@@ -379,6 +379,10 @@ https://github.com/aquasecurity/trivy
 
 ## 検出された脆弱性の修正
 
+1. ワークフローの結果、脆弱性が検出されたかと思いますので修正しましょう
+    1. `resource "aws_security_group" "webapp_alb" ` のegress（アウトバウンド）が全開放になっています。ALBからのアウトバウンド通信は通常ターゲットへのヘルスチェック等のVPC内に限られるので、VPCのCIDRのみを許可するようにします
+    2. `cidr_blocks = ["0.0.0.0/0"]` の行を削除して、138行目付近の `#cidr_blocks = var.alb_allowed_cidr_blocks` のコメントアウトを外します
+
 ## 修正後の再デプロイ
 
 1. 上記の修正が完了したら、ファイルをGitHubリポジトリにpushします
