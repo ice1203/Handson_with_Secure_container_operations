@@ -2,11 +2,15 @@
 
 このモジュールでは以下のことを行います。
 
-- プルリクエストをトリガーにTerraformコードのCI処理を実行、またmainブランチへのマージをトリガーにTerraformコードをデプロイするためのワークフローを追加
-- プルリクエスト実施。
-- マージを実施して、デプロイ
+- インフラCI/CDのためのワークフローの概要
+- インフラCI/CDの中で使用するツールの紹介
+- インフラCI処理の実施
+- 検出された脆弱性の修正
+- 修正後の再デプロイ
 
-## プルリクエストをトリガーにTerraformコードのCI処理を実行するためのワークフローを追加
+## インフラCI/CDのためのワークフローの概要
+
+### インフラCI/CDのためのGitHub Actionsワークフローの概要
 
 CI処理には以下のワークフローファイルを使用します。
 
@@ -279,7 +283,44 @@ CI処理には以下のワークフローファイルを使用します。
         - この条件は、現在のリファレンス（ブランチ）が **`main`** であることを確認します。
         - つまり、**`main`** ブランチに対するプッシュである場合にのみ、このジョブが実行されます。プルリクエストの場合、リファレンスは **`refs/pull/`** で始まるため、この条件を満たしません。
 
-## GitHub ActionsワークフローにインフラのCI/CDを追加する
+## インフラCI/CDの中で使用するツールの紹介
+
+Terraformのワークフロー処理の中で使用されているツールを簡単にご紹介します。
+これらのツールは自身の開発端末上でも使用することが出来、開発端末で使用することでよりTerraformコーディングを効率化することが出来ます
+
+> [!TIP]
+> 開発端末上でこれらのツールを使用する場合は、pre-commitというツールでコミット時に自動で実行するようにすると便利です  
+> 公式ページ： https://pre-commit.com/  
+> Terraform関連フック： https://github.com/antonbabenko/pre-commit-terraform
+
+### tfenv
+
+https://github.com/tfutils/tfenv
+
+- Terraform バイナリのバージョン管理を行うツール
+    - python における pyenv のようなツールです
+- `.terraform-version` ファイルにバージョンを記述することで、引数無しで指定したバージョンの Terraform をインストールすることができる
+    - このファイルを Git 管理することで、プロジェクト内の Terraform バージョンの共通化を行えます
+
+### TFLint
+
+https://github.com/terraform-linters/tflint
+
+- Terraform コードのリンターツールです
+- terraform validateやterraform planでは検知できないエラーを検知することができます
+    - 例えばインスタンスタイプの誤りや命名規約違反等
+
+### Trivy
+
+https://github.com/aquasecurity/trivy
+
+- 概要
+    - 静的解析ツールでセキュリティ上の脆弱性を検出するOSS
+        - 静的解析とはソースコード自体を解析することにより、プログラムを実行せずに問題を発見することを指します
+    - IaCのセキュリティ上問題ある設定や機密情報が埋め込まれていることを検知することにより、セキュリティの問題を未然に防ぐことを目的としています
+    - Terraformの他、CloudFormation、Dockerfile等にも対応しています
+
+## インフラCI処理の実施
 
 > [!TIP]
 > 実際にプルリクエストをトリガーとしたワークフローを使う場合は、GitHubのブランチ保護ルールを併用することを推奨します。これによってワークフローが成功していないとマージが不可といったことを実現できます
@@ -335,41 +376,19 @@ CI処理には以下のワークフローファイルを使用します。
 11. mainブランチへのマージをトリガーに再度、ワークフローが起動します
     1.  またリポジトリ画面上部の *Actions* タブからも実行の様子を確認してみましょう
 
-## 実行しているツールの紹介
 
-Terraformのワークフロー処理の中で使用されているツールを簡単にご紹介します。
-これらのツールは自身の開発端末上でも使用することが出来、開発端末で使用することでよりTerraformコーディングを効率化することが出来ます
+## 検出された脆弱性の修正
 
-> [!TIP]
-> 開発端末上でこれらのツールを使用する場合は、pre-commitというツールでコミット時に自動で実行するようにすると便利です  
-> 公式ページ： https://pre-commit.com/  
-> Terraform関連フック： https://github.com/antonbabenko/pre-commit-terraform
+## 修正後の再デプロイ
 
-### tfenv
+1. 上記の修正が完了したら、ファイルをGitHubリポジトリにpushします
+    1. ```
+        # コミットとpush
+        git add --all
+        git commit -m "fix terraform vulnerability"
+        git push myrepo develop
+2. 上記の手順に従いブラウザ上でdevelopブランチからmainブランチへのプルリクエストを出し、mainブランチへのマージをしてください
+    1. ※ `Terraform plan` 結果を念の為、確認するようにしましょう
 
-https://github.com/tfutils/tfenv
-
-- Terraform バイナリのバージョン管理を行うツール
-    - python における pyenv のようなツールです
-- `.terraform-version` ファイルにバージョンを記述することで、引数無しで指定したバージョンの Terraform をインストールすることができる
-    - このファイルを Git 管理することで、プロジェクト内の Terraform バージョンの共通化を行えます
-
-### TFLint
-
-https://github.com/terraform-linters/tflint
-
-- Terraform コードのリンターツールです
-- terraform validateやterraform planでは検知できないエラーを検知することができます
-    - 例えばインスタンスタイプの誤りや命名規約違反等
-
-### Trivy
-
-https://github.com/aquasecurity/trivy
-
-- 概要
-    - 静的解析ツールでセキュリティ上の脆弱性を検出するOSS
-        - 静的解析とはソースコード自体を解析することにより、プログラムを実行せずに問題を発見することを指します
-    - IaCのセキュリティ上問題ある設定や機密情報が埋め込まれていることを検知することにより、セキュリティの問題を未然に防ぐことを目的としています
-    - Terraformの他、CloudFormation、Dockerfile等にも対応しています
 
 [Next: GitHub Actionsを使ったアプリケーションのデプロイ](../module4/module4.md)

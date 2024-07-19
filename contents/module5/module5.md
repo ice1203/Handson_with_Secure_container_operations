@@ -21,7 +21,9 @@ AWS構成図として表すと以下のような形になります
 
 <a href="https://dev.classmethod.jp/articles/sysdig-secure-ecs-fargate-setting-up-terraform-overview/">Serverless Agentsを利用してECS Fargate環境でSysdig Secureを利用してみた〜Terraform編〜 | DevelopersIOより</a>
 
-## Orchestration AgentをTerraformで実装
+## Sysdig Secure導入
+
+### Orchestration AgentをTerraformで実装
 
 それでは、Orchestration Agentを実装してみましょう
 
@@ -70,7 +72,7 @@ AWS構成図として表すと以下のような形になります
     1. ※ `Terraform plan` 結果を念の為、確認するようにしましょう
 6. mainブランチへのマージができたらOrchestration Agentのデプロイは完了です
 
-## Sysdig Workload エージェントのデプロイ
+### Sysdig Workload エージェントのデプロイ
 
 続いて、アプリケーションにSysdig Workload エージェントのデプロイします  
 
@@ -102,7 +104,7 @@ AWS構成図として表すと以下のような形になります
     1. ※ `Terraform plan` 結果を念の為、確認するようにしましょう
 6. mainブランチへのマージができたらWorkload Agentのデプロイは完了です
 
-## 実際に攻撃をしてみる
+## アプリケーションへの攻撃
 
 上記の手順を実行したことでコンテナへの攻撃を検知できるようになりました。  
 実際に攻撃を行い、どういった形で攻撃の形跡が見れるのかを確認しましょう  
@@ -117,7 +119,7 @@ http://＜ALBのDNS名＞/outgoing-http-call
 - そのため、Sysdigでは既知の暗号通貨マイニングプールのアドレスへの通信を脅威として検知します。
 - ※なお、今回のハンズオン環境ではネットワークACLを使って対象のマイニングプールCIDRへのアウトバウンド通信を拒否しているので実際に接続はしません
 
-## 攻撃内容をSysdig管理画面から確認する
+## 検知結果の確認
 
 Sysdig が検知した結果はSysdig管理画面から確認することができます。まずはSysdig管理画面に入りましょう
 
@@ -126,7 +128,7 @@ Sysdig が検知した結果はSysdig管理画面から確認することがで�
 1. 管理画面に入ったら、Insights -> Hosts&Container Activity に移動します
     1. <img src="../images/module5/viewsysdig1.jpg" width=50%>
 2. 画面に円が表示されています。赤い円は脅威度がHighのアクティビティがあったことを示しています。円をクリックします
-3. 画面右にSummaryが表示されます。アイテムをクリックすると詳細が表示されます。 
+3. 画面右にSummaryが表示されます。アイテムをクリックすると詳細が表示されます。
     1. 各イベントをドリルダウンして、以下のような詳細情報を見ることができます。
         - 影響を受けたコンテナのIDおよび名前
         - 影響を受けたコンテナがデプロイされたイメージ
