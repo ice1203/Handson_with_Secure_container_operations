@@ -61,50 +61,14 @@
             "value": "auto"
         }
       ]
-    },
-    {
-      "name": "aws-otel-collector",
-      "image": "public.ecr.aws/aws-observability/aws-otel-collector:v0.32.0",
-      "cpu": 256,
-      "memory": 256,
-      "links": [],
-      "portMappings": [],
-      "essential": true,
-      "entryPoint": [],
-      "command": [
-          "--config",
-          "/etc/ecs/ecs-xray.yaml"
-      ],
-      "environment": [],
-      "environmentFiles": [],
-      "mountPoints": [],
-      "volumesFrom": [],
-      "secrets": [],
-      "dnsServers": [],
-      "dnsSearchDomains": [],
-      "extraHosts": [],
-      "dockerSecurityOptions": [],
-      "dockerLabels": {},
-      "ulimits": [],
-      "logConfiguration": {
-          "logDriver": "awslogs",
-          "options": {
-            "awslogs-group": "{{ tfstate `module.frontend-ecs.aws_cloudwatch_log_group.webapp_ecs_task.name` }}",
-            "awslogs-region": "ap-northeast-1",
-            "awslogs-stream-prefix": "otel-collector"
-          },
-          "secretOptions": []
-      },
-      "systemControls": [],
-      "credentialSpecs": []
     }
   ],
   "pidMode": "task",
-  "cpu": "512",
+  "cpu": "256",
   "executionRoleArn": "{{ tfstate `module.frontend-ecs.aws_iam_role.ecs_task_execution_role.arn` }}",
   "family": "ecs-handson-samplejs",
   "ipcMode": "",
-  "memory": "1024",
+  "memory": "512",
   "networkMode": "awsvpc",
   "requiresCompatibilities": [
     "FARGATE"

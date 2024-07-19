@@ -27,6 +27,17 @@ AWS構成図として表すと以下のような形になります
 
 それでは、Orchestration Agentを実装してみましょう
 
+1. Orchestration Agentで使用するsecretsの設定をしておきます
+    1. ご自身のGitHubリポジトリ画面を開きます。以下のようなURLのはずです
+        1. https://github.com/＜自身のGitHubID＞/Handson_with_Secure_container_operations
+    2. Settingsを選択します
+        1. <img src="../images/module3/github1.jpg" width=100%>
+    3. Secrets and variablesの「Actions」を選択します
+        1. <img src="../images/module3/github2.jpg" width=50%>
+    4. *New repository secret* ボタンをクリックします
+    5. Secretsに以下を登録します
+        - Name: SYSDIG_AGENT_ACCESS_KEY
+        - Secret: <Chatにてお伝えします>
 1. `.github/workflows/tf-plan-apply.yaml` の27行目付近の以下の行のコメントアウトを外します。※これはSysdig Orchestration Agent実装時に必要となるAgent Access Keyを変数に格納しています
     1. ```
         #TF_VAR_sysdig_agent_access_key: ${{ secrets.SYSDIG_AGENT_ACCESS_KEY }}
@@ -65,6 +76,8 @@ AWS構成図として表すと以下のような形になります
 4. 編集が完了したら、ファイルをGitHubリポジトリにpushします
     1. ```
         # コミットとpush
+        cd ~/environment/Handson_with_Secure_container_operations/terraform
+        terraform fmt --recursive
         git add --all
         git commit -m "add Orchestration Agent"
         git push myrepo develop
@@ -83,7 +96,7 @@ AWS構成図として表すと以下のような形になります
             # developブランチであることを確認
             git branch
             # 置き換える前に変更箇所を確認してみましょう
-            cd Handson_with_Secure_container_operations/contents/module5/
+            cd ~/environment/Handson_with_Secure_container_operations/contents/module5/
             diff ecs-task-def.json ../../app/ecs-task-def.json
             # タスク定義ファイルの格納
             git mv ecs-task-def.json ../../app/ecs-task-def.json

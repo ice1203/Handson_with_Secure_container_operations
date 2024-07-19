@@ -48,7 +48,9 @@ https://ap-northeast-1.console.aws.amazon.com/cloud9/home?region=ap-northeast-1
 1. Cloud9のターミナル画面に戻ります
 2. Cloud9の設定画面を開き、*AWS Settings/Credentials/AWS Managed temporary credentials* を無効（赤い☓マーク）にします
     1. <img src="../images/module2/AWS_Cloud9-1.jpg" width=100%>
-3. 環境変数を設定し、読み込ませます
+3. 隠しファイルを表示する設定にします
+    1. <img src="../images/module2/c9hidden.jpg" width=80%>
+4. 環境変数を設定し、読み込ませます
     1. ```
         echo "export AWS_DEFAULT_REGION=ap-northeast-1" >> ~/.bashrc
         echo "export AWS_REGION=ap-northeast-1" >> ~/.bashrc
@@ -56,17 +58,17 @@ https://ap-northeast-1.console.aws.amazon.com/cloud9/home?region=ap-northeast-1
         source ~/.bashrc
         # 環境変数が読み込まれたことを確認
         test -n "$AWS_REGION" && echo AWS_REGION is "$AWS_REGION" || echo AWS_REGION is not set
-4. bash_profile及び、AWS CLIにもセッティングします
+5. bash_profile及び、AWS CLIにもセッティングします
     1. ```
         echo "export AWS_ACCOUNT_ID=${AWS_ACCOUNT_ID}" | tee -a ~/.bash_profile
         echo "export AWS_REGION=${AWS_REGION}" | tee -a ~/.bash_profile
         aws configure set default.region ${AWS_REGION}
         # 確認
         aws configure get default.region
-5. IAMロールが正しく設定されていることを確認します
+6. IAMロールが正しく設定されていることを確認します
     1. `aws sts get-caller-identity --query Arn | grep ecs-handson-cloud9 -q && echo "IAM role valid" || echo "IAM role NOT valid"`
     2. `IAM role NOT valid` と出力された場合は、続行せずにハンズオン担当を呼んでください
-6. 以下のスクリプトを実行し、ディスクサイズを増やします
+7. 以下のスクリプトを実行し、ディスクサイズを増やします
     1. ```
        pip3 install --user --upgrade boto3
        export instance_id=$(aws sts get-caller-identity --query Arn --output text | cut -d '/' -f3)
@@ -98,7 +100,7 @@ https://ap-northeast-1.console.aws.amazon.com/cloud9/home?region=ap-northeast-1
        if [ $? -eq 0 ]; then
            sudo reboot
        fi
-7. コマンドが成功するとCloud9のインスタンスが再起動されます。再度立ち上がってくるまでしばらくお待ちください
+8. コマンドが成功するとCloud9のインスタンスが再起動されます。再度立ち上がってくるまでしばらくお待ちください
 
 ## 必要なツールやリポジトリのクローン
 
