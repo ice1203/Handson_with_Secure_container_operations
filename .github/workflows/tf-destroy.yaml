@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
 
 env:
-  ROOT_MODULE_PATH: ./environments/dev
+  ROOT_MODULE_PATH: terraform/environments/dev
   APPLY_ROLE_ARN: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/ecs-handson-githubactions
   TFSTATE_BUCKET: tmp-hands-on-tf-state-${{ secrets.AWS_ACCOUNT_ID }}
 
