@@ -151,6 +151,8 @@ module "githubactions_role" {
 cd Handson_with_Secure_container_operations/terraform/environments/common/
 # terraform インストール
 tfenv install
+# インストール確認
+terraform -v
 terraform init -backend-config="bucket=tmp-hands-on-tf-state-$(aws sts get-caller-identity --query Account --output text)"
 terraform plan
 terraform apply
@@ -158,7 +160,6 @@ terraform apply
 # devのterraform apply
 cd ../dev/
 # terraform インストール
-tfenv install
 terraform init -backend-config="bucket=tmp-hands-on-tf-state-$(aws sts get-caller-identity --query Account --output text)"
 terraform plan
 terraform apply
@@ -178,5 +179,14 @@ terraform apply
         git remote -v
         # push
         git push myrepo main
+> [!IMPORTANT]
+> - GitHubへのpushにはユーザ名とトークンをつかいます。トークンがない場合は以下の手順で作成してください
+> 1. GitHubにログインします。
+> 2. 右上のプロフィールアイコンをクリックし、「Settings」を選択します。
+> 3. 左側のメニューから「Developer settings」を選択します。
+> 4. 「Personal access tokens」をクリックし、「Tokens(classic)」を選択します。
+> 5. 「Generate new token」をクリックし、「Generate new token(classic)」を選択します。
+> 5. トークンに適切な名前を付け、スコープ（権限）に *repo* と *workflow* を選択します
+> 6. 「Generate token」をクリックし、生成されたトークンをコピーします。このトークンは一度しか表示されないため、安全な場所に保存してください。
 
 [Next: GitHub Actionsを使ったインフラのCI/CD](../module3/module3.md)

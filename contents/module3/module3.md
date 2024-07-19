@@ -343,38 +343,40 @@ https://github.com/aquasecurity/trivy
             git branch develop
             git checkout develop
             # ワークフローファイルの格納
-            cd Handson_with_Secure_container_operations/contents/module3/
-            git mv tf-plan-apply.yaml ../../.github/workflows/app
+            cd ~/environment/Handson_with_Secure_container_operations/contents/module3/
+            mkdir -p ../../.github/workflows/
+            git mv tf-plan-apply.yaml ../../.github/workflows/
 3. またこのワークフローでは `terraform` ディレクトリ配下のファイルの変更を検知してワークフローが起動するような設定になっています。そのため `terraform` ディレクトリ配下のファイルを編集します
-    1. `terraform/modules/ecs/main.tf`を開き、107行目付近の以下の箇所のコメントアウトを外してください
+    1. `terraform/modules/ecs/main.tf`を開き、109行目付近の以下の箇所のコメントアウトを外してください
         1. ```
             ingress {
                 # ↓以下の行のコメントアウトを外す
                 #description = "Allow traffic from ALB"
                 security_groups = [aws_security_group.webapp_alb.id]
                 from_port       = var.docker_container_port
-4. 編集が完了したら、ファイルをGitHubリポジトリにpushします
+4. またTerraformファイルのフォーマットをしておきます（今後Terraformファイルを修正する際は必ずフォーマットするようにします。実開発ではpre-commit等のツールを使うと自動でフォーマットしてくれるので便利です）
     1. ```
+        cd ~/environment/Handson_with_Secure_container_operations/terraform
+        terraform fmt --recursive
+5. 編集が完了したら、ファイルをGitHubリポジトリにpushします
+    1. ```
+        git config --global user.name "＜自身の名前＞"
+        git config --global user.email you@example.com
         # コミットとpush
         git add --all
         git commit -m "add terraform workflow"
         git push myrepo develop
-5. ワークフローファイルの追加ができたので実際に動かしてみます。ブラウザ上でdevelopブランチからmainブランチへのプルリクエストを出します
+6. ワークフローファイルの追加ができたので実際に動かしてみます。ブラウザ上でdevelopブランチからmainブランチへのプルリクエストを出します
     1. <img src="../images/module3/github4.jpg" width=100%>
-6. *New pull request* ボタンをクリックします
-7. developブランチからmainブランチへのプルリクエストであることを以下のように指定します
+7. *New pull request* ボタンをクリックします
+8. developブランチからmainブランチへのプルリクエストであることを以下のように指定します
     1. <img src="../images/module3/github5.jpg" width=100%>
-8. *Create pull request* ボタンをクリックします
-9. mainブランチへのプルリクエストをトリガーにワークフロー処理が動き始めたはずです。
+9.  *Create pull request* ボタンをクリックします
+10. mainブランチへのプルリクエストをトリガーにワークフロー処理が動き始めたはずです。
     - しばらく待てばプルリクエストのコメントとして各ツールのチェック状況のサマリが表示されます。
         - <img src="../images/module3/github8.jpg" width=80%>
     - またリポジトリ画面上部の *Actions* タブからも実行の様子が確認できます
         - <img src="../images/module3/github6.jpg" width=80%>
-10. プルリクエストをトリガーとした、CIのワークフロー処理が正常に完了したら、次はmainブランチにpushをすることで実際にAWS環境へのデプロイを行います
-    1.  プルリクエストの画面に戻り、 *Merge pull request* ボタンをクリックします
-        1.  <img src="../images/module3/github7.jpg" width=80%>
-11. mainブランチへのマージをトリガーに再度、ワークフローが起動します
-    1.  またリポジトリ画面上部の *Actions* タブからも実行の様子を確認してみましょう
 
 
 ## 検出された脆弱性の修正
@@ -391,8 +393,13 @@ https://github.com/aquasecurity/trivy
         git add --all
         git commit -m "fix terraform vulnerability"
         git push myrepo develop
-2. 上記の手順に従いブラウザ上でdevelopブランチからmainブランチへのプルリクエストを出し、mainブランチへのマージをしてください
-    1. ※ `Terraform plan` 結果を念の為、確認するようにしましょう
+2. 先ほどのプルリクエストはマージされず残っているのでプルリクエストが更新されたことにより再度ワークフローが起動します
+3. CIのワークフロー処理が正常に完了したら、次はmainブランチにpushをすることで実際にAWS環境へのデプロイを行います
+    1.  プルリクエストの画面に戻り、 *Merge pull request* ボタンをクリックします
+        1.  <img src="../images/module3/github7.jpg" width=80%>
+4. mainブランチへのマージをトリガーに再度、ワークフローが起動します
+    1.  またリポジトリ画面上部の *Actions* タブからも実行の様子を確認してみましょう
+
 
 
 [Next: GitHub Actionsを使ったアプリケーションのデプロイ](../module4/module4.md)
