@@ -137,6 +137,13 @@ resource "aws_security_group" "webapp_alb" {
     protocol    = "-1"
     cidr_blocks = var.alb_allowed_cidr_blocks
   }
+  egress {
+    from_port = 0
+    to_port   = 0
+    protocol  = "-1"
+    #cidr_blocks = var.alb_allowed_cidr_blocks
+    cidr_blocks = ["0.0.0.0/0"]
+  }
 
 }
 #trivy:ignore:AVD-AWS-0053

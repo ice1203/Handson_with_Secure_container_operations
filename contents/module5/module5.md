@@ -27,6 +27,17 @@ AWS構成図として表すと以下のような形になります
 
 それでは、Orchestration Agentを実装してみましょう
 
+1. Orchestration Agentで使用するsecretsの設定をしておきます
+    1. ご自身のGitHubリポジトリ画面を開きます。以下のようなURLのはずです
+        1. https://github.com/＜自身のGitHubID＞/Handson_with_Secure_container_operations
+    2. Settingsを選択します
+        1. <img src="../images/module3/github1.jpg" width=100%>
+    3. Secrets and variablesの「Actions」を選択します
+        1. <img src="../images/module3/github2.jpg" width=50%>
+    4. *New repository secret* ボタンをクリックします
+    5. Secretsに以下を登録します
+        - Name: SYSDIG_AGENT_ACCESS_KEY
+        - Secret: <Chatにてお伝えします>
 1. `.github/workflows/tf-plan-apply.yaml` の27行目付近の以下の行のコメントアウトを外します。※これはSysdig Orchestration Agent実装時に必要となるAgent Access Keyを変数に格納しています
     1. ```
         #TF_VAR_sysdig_agent_access_key: ${{ secrets.SYSDIG_AGENT_ACCESS_KEY }}
@@ -65,6 +76,8 @@ AWS構成図として表すと以下のような形になります
 4. 編集が完了したら、ファイルをGitHubリポジトリにpushします
     1. ```
         # コミットとpush
+        cd ~/environment/Handson_with_Secure_container_operations/terraform
+        terraform fmt --recursive
         git add --all
         git commit -m "add Orchestration Agent"
         git push myrepo develop
@@ -83,12 +96,12 @@ AWS構成図として表すと以下のような形になります
             # developブランチであることを確認
             git branch
             # 置き換える前に変更箇所を確認してみましょう
-            cd Handson_with_Secure_container_operations/contents/module5/
+            cd ~/environment/Handson_with_Secure_container_operations/contents/module5/
             diff ecs-task-def.json ../../app/ecs-task-def.json
             # タスク定義ファイルの格納
-            git mv ecs-task-def.json ../../app/ecs-task-def.json
+            git mv -f ecs-task-def.json ../../app/ecs-task-def.json
 3. また、タスク定義の他にアプリケーション用のDockerfileにも一部変更が必要です。具体的にはENTRYPOINTを変更し、Sysdigサイドカーコンテナと共有している実行ファイルから、アプリケーションを呼び出すように修正します
-    1. `Dockerfile` の以下の行のコメントアウトを外します。
+    1. `app/javascript-sample-app/Dockerfile` の以下の行のコメントアウトを外します。
         1. ```
            # ENTRYPOINT [ "/opt/draios/bin/instrument","/nodejs/bin/node" ]
 > [!TIP]
@@ -101,7 +114,6 @@ AWS構成図として表すと以下のような形になります
         git commit -m "add workload agent"
         git push myrepo develop
 5. [module4](../module4/module4.md) の手順に従いブラウザ上でdevelopブランチからmainブランチへのプルリクエストを出し、mainブランチへのマージをしてください
-    1. ※ `Terraform plan` 結果を念の為、確認するようにしましょう
 6. mainブランチへのマージができたらWorkload Agentのデプロイは完了です
 
 ## アプリケーションへの攻撃
@@ -145,4 +157,4 @@ Sysdig が検知した結果はSysdig管理画面から確認することがで�
 > - これを利用することで、例えば高い脅威度のイベントが発生した際にECSタスクを自動で止めるといった処理も実装可能です
 
 
-[Next: Sysdigによるランタイムモニタリングの導入](../module5/module5.md)
+[Next: トレース導入](../module6/module6.md)

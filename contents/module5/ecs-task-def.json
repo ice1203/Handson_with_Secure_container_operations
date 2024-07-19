@@ -21,10 +21,49 @@
           "hostPort": 8080,
           "protocol": "tcp"
         }
+      ],
+      "environment": [
+        {
+            "name": "SYSDIG_SIDECAR",
+            "value": "auto"
+        }
+      ],
+      "volumesFrom": [
+        {
+          "sourceContainer": "SysdigInstrumentation",
+          "readOnly": true
+        }
+      ],
+      "linuxParameters": {
+        "capabilities": {
+          "add": ["SYS_PTRACE"]
+        }
+      }
+    },
+    {
+      "name": "SysdigInstrumentation",
+      "image": "quay.io/sysdig/workload-agent:latest",
+      "environment": [
+        {
+            "name": "SYSDIG_ORCHESTRATOR",
+            "value": "{{ tfstate `module.fargate-orchestrator-agent.aws_lb.orchestrator_agent.dns_name` }}"
+        },
+        {
+            "name": "SYSDIG_ORCHESTRATOR_PORT",
+            "value": "{{ tfstate `module.fargate-orchestrator-agent.aws_lb_listener.orchestrator_agent.port` }}"
+        },
+        {
+            "name": "SYSDIG_PRIORITY",
+            "value": "availability"
+        },
+        {
+            "name": "SYSDIG_SIDECAR",
+            "value": "auto"
+        }
       ]
     }
   ],
-  "pidMode": "",
+  "pidMode": "task",
   "cpu": "256",
   "executionRoleArn": "{{ tfstate `module.frontend-ecs.aws_iam_role.ecs_task_execution_role.arn` }}",
   "family": "ecs-handson-samplejs",
@@ -44,5 +83,5 @@
       "value": "terraform"
     }
   ],
-  "taskRoleArn": "arn:aws:iam::551748907504:role/ecs-handson-frontend-ecs-task-role"
+  "taskRoleArn": "{{ tfstate `module.frontend-ecs.aws_iam_role.ecs_task_role.arn` }}"
 }
