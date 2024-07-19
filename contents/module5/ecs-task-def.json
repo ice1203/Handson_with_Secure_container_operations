@@ -119,5 +119,5 @@
       "value": "terraform"
     }
   ],
-  "taskRoleArn": "arn:aws:iam::551748907504:role/ecs-handson-frontend-ecs-task-role"
+  "taskRoleArn": "{{ tfstate `module.frontend-ecs.aws_iam_role.ecs_task_role.arn` }}"
 }

@@ -78,7 +78,7 @@ CI/CD処理には以下のワークフローファイルを使用します。
             # developブランチであることを確認
             git branch
             # ワークフローファイルの格納
-            cd Handson_with_Secure_container_operations/contents/module4/
+            cd ~/environment/Handson_with_Secure_container_operations/contents/module4/
             git mv container-ci.yaml ../../.github/workflows/
             git mv app-cd.yaml ../../.github/workflows/
 3. またこのワークフローでは `app` ディレクトリ配下のファイルの変更を検知してワークフローが起動するような設定になっています。そのため `terraform` ディレクトリ配下のファイルを編集します
@@ -119,8 +119,8 @@ CI/CD処理には以下のワークフローファイルを使用します。
     1. `Dockerfile`を `.app/javascript-sample-app` ディレクトリに格納しましょう
         1. ```
             # Dockerfileの格納
-            cd Handson_with_Secure_container_operations/contents/module4/
-            git mv Dockerfile ../../app/javascript-sample-app
+            cd ~/environment/Handson_with_Secure_container_operations/contents/module4/
+            git mv -f Dockerfile ../../app/javascript-sample-app
             git add --all
             git commit -m "update dockerfile"
             git push myrepo develop

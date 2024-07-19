@@ -383,13 +383,22 @@ https://github.com/aquasecurity/trivy
 
 1. ワークフローの結果、脆弱性が検出されたかと思いますので修正しましょう
     1. `resource "aws_security_group" "webapp_alb" ` のegress（アウトバウンド）が全開放になっています。ALBからのアウトバウンド通信は通常ターゲットへのヘルスチェック等のVPC内に限られるので、VPCのCIDRのみを許可するようにします
-    2. `cidr_blocks = ["0.0.0.0/0"]` の行を削除して、138行目付近の `#cidr_blocks = var.alb_allowed_cidr_blocks` のコメントアウトを外します
+    2. 以下の140-145行目を削除します
+        1. ```
+            egress {
+                from_port   = 0
+                to_port     = 0
+                protocol    = "-1"
+                cidr_blocks = ["0.0.0.0/0"]
+            }            
 
 ## 修正後の再デプロイ
 
 1. 上記の修正が完了したら、ファイルをGitHubリポジトリにpushします
     1. ```
         # コミットとpush
+        cd ~/environment/Handson_with_Secure_container_operations/terraform
+        terraform fmt --recursive
         git add --all
         git commit -m "fix terraform vulnerability"
         git push myrepo develop
