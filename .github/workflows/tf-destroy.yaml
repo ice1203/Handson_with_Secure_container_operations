@@ -7,6 +7,7 @@ env:
   ROOT_MODULE_PATH: terraform/environments/dev
   APPLY_ROLE_ARN: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/ecs-handson-githubactions
   TFSTATE_BUCKET: tmp-hands-on-tf-state-${{ secrets.AWS_ACCOUNT_ID }}
+  TF_VAR_sysdig_agent_access_key: ${{ secrets.SYSDIG_AGENT_ACCESS_KEY }}
 
 permissions:
   id-token: write
