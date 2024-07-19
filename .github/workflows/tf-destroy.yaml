@@ -6,6 +6,7 @@ on:
 env:
   ROOT_MODULE_PATH: ./environments/dev
   APPLY_ROLE_ARN: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/ecs-handson-githubactions
+  TFSTATE_BUCKET: tmp-hands-on-tf-state-${{ secrets.AWS_ACCOUNT_ID }}
 
 permissions:
   id-token: write
@@ -39,7 +40,7 @@ jobs:
 
     - name: Terraform Init
       run: |
-        terraform init
+        terraform init -backend-config="bucket=${{ env.TFSTATE_BUCKET }}"
       working-directory: ${{ env.ROOT_MODULE_PATH }}
 
 
