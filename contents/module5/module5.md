@@ -99,9 +99,9 @@ AWS構成図として表すと以下のような形になります
             cd ~/environment/Handson_with_Secure_container_operations/contents/module5/
             diff ecs-task-def.json ../../app/ecs-task-def.json
             # タスク定義ファイルの格納
-            git mv ecs-task-def.json ../../app/ecs-task-def.json
+            git mv -f ecs-task-def.json ../../app/ecs-task-def.json
 3. また、タスク定義の他にアプリケーション用のDockerfileにも一部変更が必要です。具体的にはENTRYPOINTを変更し、Sysdigサイドカーコンテナと共有している実行ファイルから、アプリケーションを呼び出すように修正します
-    1. `Dockerfile` の以下の行のコメントアウトを外します。
+    1. `app/javascript-sample-app/Dockerfile` の以下の行のコメントアウトを外します。
         1. ```
            # ENTRYPOINT [ "/opt/draios/bin/instrument","/nodejs/bin/node" ]
 > [!TIP]
@@ -114,7 +114,6 @@ AWS構成図として表すと以下のような形になります
         git commit -m "add workload agent"
         git push myrepo develop
 5. [module4](../module4/module4.md) の手順に従いブラウザ上でdevelopブランチからmainブランチへのプルリクエストを出し、mainブランチへのマージをしてください
-    1. ※ `Terraform plan` 結果を念の為、確認するようにしましょう
 6. mainブランチへのマージができたらWorkload Agentのデプロイは完了です
 
 ## アプリケーションへの攻撃
