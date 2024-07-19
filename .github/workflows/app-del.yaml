@@ -1,0 +1,33 @@
+name: App Delete
+
+on:
+  workflow_dispatch:
+jobs:
+  delete:
+    runs-on: ubuntu-22.04
+    env:
+      AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
+      AWS_REGION: ap-northeast-1
+      ECR_REPOSITORY_NAME: ecs-handson-frontend-repo
+      ASSUME_ROLE: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/ecs-handson-githubactions
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+    - uses: actions/checkout@v4
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        role-to-assume: ${{ env.ASSUME_ROLE }}
+        aws-region: ${{ env.AWS_REGION }}
+
+    - name: "ecspressoのインストール"
+      uses: kayac/ecspresso@v2
+      with:
+        version: v2.3.5
+
+    - name: "ecspressoを使ってECSへのデプロイを実行"
+      run: ecspresso scale --tasks=0 && ecspresso delete --force
+      working-directory: ./app/
+      env:
+        IMAGE_TAG: "delete"

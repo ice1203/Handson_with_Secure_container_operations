@@ -1,0 +1,49 @@
+name: Terraform Destroy
+
+on:
+  workflow_dispatch:
+
+env:
+  ROOT_MODULE_PATH: ./environments/dev
+  APPLY_ROLE_ARN: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/ecs-handson-githubactions
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  terraform-destroy:
+    name: 'Terraform Destroy'
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Set AWS Credential
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        role-to-assume: ${{ env.APPLY_ROLE_ARN }}
+        aws-region: ap-northeast-1
+
+    - name: Get Terraform Version
+      id: tf-version
+      run: |
+        echo "TERRAFORM_VERSION=$(cat .terraform-version)" >> $GITHUB_OUTPUT
+
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v3
+      with:
+        terraform_version: ${{ steps.tf-version.outputs.TERRAFORM_VERSION }}
+        terraform_wrapper: false
+
+    - name: Terraform Init
+      run: |
+        terraform init
+      working-directory: ${{ env.ROOT_MODULE_PATH }}
+
+
+    - name: Terraform Destroy
+      run: |
+        terraform destroy -auto-approve
+      working-directory: ${{ env.ROOT_MODULE_PATH }}
