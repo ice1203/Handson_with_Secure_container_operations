@@ -5,9 +5,10 @@ variable "allowed_cidr_blocks" {
 
 }
 
-variable "sysdig_agent_access_key" {
-  type        = string
-  description = "Sysdig agent access key"
-  sensitive   = true
-
-}
+#variable "sysdig_agent_access_key" {
+#  type        = string
+#  description = "Sysdig agent access key"
+#  sensitive   = true
+#
+#}
+#
