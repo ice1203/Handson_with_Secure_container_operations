@@ -48,7 +48,7 @@ https://ap-northeast-1.console.aws.amazon.com/cloud9/home?region=ap-northeast-1
 1. Cloud9のターミナル画面に戻ります
 2. Cloud9の設定画面を開き、*AWS Settings/Credentials/AWS Managed temporary credentials* を無効（赤い☓マーク）にします
     1. <img src="../images/module2/AWS_Cloud9-1.jpg" width=100%>
-3. 隠しファイルを表示する設定にします
+3. 隠しファイルを表示するため、*Environment*ウィンドウで歯車アイコンを選択してから、*Show Hidden Files*を選択します
     1. <img src="../images/module2/c9hidden.jpg" width=80%>
 4. 環境変数を設定し、読み込ませます
     1. ```
