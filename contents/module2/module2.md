@@ -130,9 +130,9 @@ git clone https://github.com/ice1203/Handson_with_Secure_container_operations.gi
 
 ### github_ownerの修正
 
-- このタイミングで `githubactions_role` モジュール内にある `github_owner`の値をご自身のGitHubIDに変更します。
-- GitHubIDはブラウザでご自身のGitHubで適当なリポジトリを開いたときのURLの以下の部分になります。
-    - <img src="../images/module2/githubid.jpg" width=60%>
+- このタイミングで `githubactions_role` モジュール内にある `github_owner`の値をご自身のGitHubユーザ名に変更します。
+- GitHubユーザ名はブラウザでご自身のGitHubで適当なリポジトリを開いたときのURLの以下の部分になります。
+    - <img src="../images/module2/GitHub_Username.jpg" width=60%>
 
 ・terraform/environments/common/main.tf
 ```
@@ -180,7 +180,7 @@ terraform apply
 > 必ずパブリックリポジトリを作成してください。プライベートリポジトリの場合、GitHubActionsのワークフローの実行時間に制限がかかるためです
 2. 以下のコマンドを実行してください
     1. ```
-        git remote add myrepo https://github.com/<ご自身のGitHubID>/Handson_with_Secure_container_operations.git
+        git remote add myrepo https://github.com/<ご自身のGitHubユーザ名>/Handson_with_Secure_container_operations.git
         # リポジトリ追加されたことを確認
         git remote -v
         # push
