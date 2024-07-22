@@ -48,7 +48,7 @@ https://ap-northeast-1.console.aws.amazon.com/cloud9/home?region=ap-northeast-1
 1. Cloud9のターミナル画面に戻ります
 2. Cloud9の設定画面を開き、*AWS Settings/Credentials/AWS Managed temporary credentials* を無効（赤い☓マーク）にします
     1. <img src="../images/module2/AWS_Cloud9-1.jpg" width=100%>
-3. 隠しファイルを表示する設定にします
+3. 隠しファイルを表示するため、*Environment*ウィンドウで歯車アイコンを選択してから、*Show Hidden Files*を選択します
     1. <img src="../images/module2/c9hidden.jpg" width=80%>
 4. 環境変数を設定し、読み込ませます
     1. ```
@@ -130,9 +130,9 @@ git clone https://github.com/ice1203/Handson_with_Secure_container_operations.gi
 
 ### github_ownerの修正
 
-- このタイミングで `githubactions_role` モジュール内にある `github_owner`の値をご自身のGitHubIDに変更します。
-- GitHubIDはブラウザでご自身のGitHubで適当なリポジトリを開いたときのURLの以下の部分になります。
-    - <img src="../images/module2/githubid.jpg" width=60%>
+- このタイミングで `githubactions_role` モジュール内にある `github_owner`の値をご自身のGitHubユーザ名に変更します。
+- GitHubユーザ名はブラウザでご自身のGitHubで適当なリポジトリを開いたときのURLの以下の部分になります。
+    - <img src="../images/module2/GitHub_Username.jpg" width=60%>
 
 ・terraform/environments/common/main.tf
 ```
@@ -180,7 +180,7 @@ terraform apply
 > 必ずパブリックリポジトリを作成してください。プライベートリポジトリの場合、GitHubActionsのワークフローの実行時間に制限がかかるためです
 2. 以下のコマンドを実行してください
     1. ```
-        git remote add myrepo https://github.com/<ご自身のGitHubID>/Handson_with_Secure_container_operations.git
+        git remote add myrepo https://github.com/<ご自身のGitHubユーザ名>/Handson_with_Secure_container_operations.git
         # リポジトリ追加されたことを確認
         git remote -v
         # push

@@ -29,7 +29,7 @@ AWS構成図として表すと以下のような形になります
 
 1. Orchestration Agentで使用するsecretsの設定をしておきます
     1. ご自身のGitHubリポジトリ画面を開きます。以下のようなURLのはずです
-        1. https://github.com/＜自身のGitHubID＞/Handson_with_Secure_container_operations
+        1. https://github.com/＜自身のGitHubユーザ名＞/Handson_with_Secure_container_operations
     2. Settingsを選択します
         1. <img src="../images/module3/github1.jpg" width=100%>
     3. Secrets and variablesの「Actions」を選択します
